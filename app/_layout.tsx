@@ -1,4 +1,3 @@
-import { ToastProvider } from '@tamagui/toast';
 import { useFonts } from 'expo-font';
 import { Stack, SplashScreen } from 'expo-router';
 import React, { useEffect } from 'react';
@@ -9,6 +8,7 @@ import { TamaguiProvider, Theme } from 'tamagui';
 import config from '../tamagui.config';
 
 import { DatabaseProvider } from '~/lib/providers/database-provider';
+import { NetInfoProvider } from '~/lib/providers/netinfo-provider';
 
 SplashScreen.preventAutoHideAsync();
 
@@ -43,13 +43,15 @@ const Wrapper = ({ children }: { children: React.ReactNode }) => {
 
   return (
     <ThemeProvider>
-      <DatabaseProvider>
-        <GestureHandlerRootView style={{ flex: 1 }}>
-          <Theme name={'dark'}>
-            <ToastProvider>{children}</ToastProvider>
-          </Theme>
-        </GestureHandlerRootView>
-      </DatabaseProvider>
+      <NetInfoProvider>
+        {/* <AuthProvider> */}
+        <DatabaseProvider>
+          <GestureHandlerRootView style={{ flex: 1 }}>
+            <Theme name="dark">{children}</Theme>
+          </GestureHandlerRootView>
+        </DatabaseProvider>
+        {/* </AuthProvider> */}
+      </NetInfoProvider>
     </ThemeProvider>
   );
 };
