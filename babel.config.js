@@ -10,6 +10,8 @@ module.exports = function (api) {
     },
   ]);
 
+  plugins.push(['@babel/plugin-proposal-decorators', { legacy: true }]);
+
   plugins.push('react-native-reanimated/plugin');
 
   return {

@@ -10,7 +10,7 @@ type ScreenContentProps = {
 
 export const ScreenContent = ({ title, path, children }: ScreenContentProps) => {
   return (
-    <Theme name="light">
+    <Theme>
       <YStack flex={1} alignItems="center" justifyContent="center">
         <H2>{title}</H2>
         <Separator />

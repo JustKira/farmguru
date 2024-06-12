@@ -16,6 +16,18 @@
         {
           "launchModeExperimental": "most-recent"
         }
+      ],
+      ["@morrowdigital/watermelondb-expo-plugin"],
+      [
+        "expo-build-properties",
+        {
+          "android": {
+            "kotlinVersion": "1.6.10",
+            "packagingOptions": {
+              "pickFirst": ["**/libc++_shared.so"]
+            }
+          }
+        }
       ]
     ],
     "experiments": {
@@ -24,15 +36,13 @@
     },
     "orientation": "portrait",
     "icon": "./assets/icon.png",
-    "userInterfaceStyle": "light",
+    "userInterfaceStyle": "automatic",
     "splash": {
       "image": "./assets/splash.png",
       "resizeMode": "contain",
       "backgroundColor": "#ffffff"
     },
-    "assetBundlePatterns": [
-      "**/*"
-    ],
+    "assetBundlePatterns": ["**/*"],
     "ios": {
       "supportsTablet": true,
       "bundleIdentifier": "com.vais.farmguru"
