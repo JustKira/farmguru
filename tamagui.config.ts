@@ -3,6 +3,7 @@ import { createInterFont } from '@tamagui/font-inter';
 import { createMedia } from '@tamagui/react-native-media-driver';
 import { shorthands } from '@tamagui/shorthands';
 import { themes, tokens } from '@tamagui/themes';
+import { light } from '@tamagui/themes/types/generated-new';
 import { createTamagui, styled, SizableText, H1, YStack } from 'tamagui';
 
 const animations = createAnimations({
@@ -32,6 +33,7 @@ const bodyFont = createInterFont();
 export const Container = styled(YStack, {
   flex: 1,
   padding: 24,
+  backgroundColor: '$background',
 });
 
 export const Main = styled(YStack, {
@@ -41,22 +43,21 @@ export const Main = styled(YStack, {
 });
 
 export const Title = styled(H1, {
-  color: '#000',
+  color: '$foreground',
   size: '$12',
 });
 
+export const Text = styled(SizableText, {
+  color: '$foreground',
+  size: '$10',
+});
+
 export const Subtitle = styled(SizableText, {
-  color: '#38434D',
+  color: '$foreground',
   size: '$9',
 });
 
 const config = createTamagui({
-  light: {
-    color: {
-      background: 'gray',
-      text: 'black',
-    },
-  },
   defaultFont: 'body',
   animations,
   shouldAddPrefersColorThemes: true,
@@ -66,7 +67,27 @@ const config = createTamagui({
     body: bodyFont,
     heading: headingFont,
   },
-  themes,
+  themes: {
+    ...themes,
+    light: {
+      ...themes.light,
+      background: '#F2F2F2',
+      foreground: '#000',
+      muted: '#ebedeb',
+      foregroundMuted: '#434543',
+      primary: '#38b000',
+      secondary: '#38b000',
+    },
+    dark: {
+      ...themes.dark,
+      primary: '#9ef01a',
+      secondary: '#38b000',
+      muted: '#1f211f',
+      foregroundMuted: '#909190',
+      background: '#030802',
+      foreground: '#FFFFFF',
+    },
+  },
   tokens,
   media: createMedia({
     xs: { maxWidth: 660 },

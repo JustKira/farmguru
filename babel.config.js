@@ -10,7 +10,7 @@ module.exports = function (api) {
     },
   ]);
 
-  plugins.push(['@babel/plugin-proposal-decorators', { legacy: true }]);
+  plugins.push(['inline-import', { extensions: ['.sql'] }]);
 
   plugins.push('react-native-reanimated/plugin');
 

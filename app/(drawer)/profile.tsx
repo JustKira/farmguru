@@ -7,12 +7,12 @@ import NavStackStyled from '~/components/NavStackStyled';
 import { ScreenContent } from '~/components/ScreenContent';
 import { Text } from '~/tamagui.config';
 
-export default function Home() {
+export default function Profile() {
   return (
     <>
-      <NavStackStyled options={{ title: 'Home' }} />
+      <NavStackStyled options={{ title: 'Profile' }} />
       <Container>
-        <ScreenContent path="app/(drawer)/index.tsx" title="Home" />
+        <ScreenContent path="app/(drawer)/index.tsx" title="Profile" />
         <Text>Hello</Text>
       </Container>
     </>

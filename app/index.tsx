@@ -4,16 +4,15 @@ import { useTheme } from 'tamagui';
 
 import { Container } from '~/components/Container';
 import NavStackStyled from '~/components/NavStackStyled';
-import { ScreenContent } from '~/components/ScreenContent';
+
 import { Text } from '~/tamagui.config';
 
-export default function Home() {
+export default function SplashScreen() {
   return (
     <>
-      <NavStackStyled options={{ title: 'Home' }} />
+      <NavStackStyled options={{ headerShown: false }} />
       <Container>
-        <ScreenContent path="app/(drawer)/index.tsx" title="Home" />
-        <Text>Hello</Text>
+        <Text>Loading...</Text>
       </Container>
     </>
   );
