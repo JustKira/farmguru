@@ -1,19 +1,21 @@
 import { ToastProvider } from '@tamagui/toast';
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
-import { useMigrations } from 'drizzle-orm/expo-sqlite/migrator';
+
 import { useFonts } from 'expo-font';
 import * as NavigationBar from 'expo-navigation-bar';
 import { Stack, SplashScreen } from 'expo-router';
 import React, { useEffect } from 'react';
 import { useColorScheme } from 'react-native';
 import { GestureHandlerRootView } from 'react-native-gesture-handler';
-import { TamaguiProvider, Theme } from 'tamagui';
-
-import config from '../tamagui.config';
+import { TamaguiProvider, Theme, YStack } from 'tamagui';
+import { useMigrations } from 'drizzle-orm/expo-sqlite/migrator';
+import migrations from '../drizzle/migrations';
+import config, { Text } from '../tamagui.config';
 
 import { AuthProvider } from '~/lib/providers/auth-provider';
-import { DatabaseProvider } from '~/lib/providers/database-provider';
+
 import { NetInfoProvider } from '~/lib/providers/netinfo-provider';
+import db from '~/lib/db';
 
 SplashScreen.preventAutoHideAsync();
 
@@ -55,21 +57,43 @@ const Wrapper = ({ children }: { children: React.ReactNode }) => {
 
   return (
     <ThemeProvider>
-      <QueryClientProvider client={queryClient}>
-        <NetInfoProvider>
-          <DatabaseProvider>
-            <AuthProvider>
-              <GestureHandlerRootView style={{ flex: 1 }}>
+      <GestureHandlerRootView style={{ flex: 1 }}>
+        <MigratorWrapper>
+          <QueryClientProvider client={queryClient}>
+            <NetInfoProvider>
+              <AuthProvider>
                 <Theme name={color}>
                   <ToastProvider>{children}</ToastProvider>
                 </Theme>
-              </GestureHandlerRootView>
-            </AuthProvider>
-          </DatabaseProvider>
-        </NetInfoProvider>
-      </QueryClientProvider>
+              </AuthProvider>
+            </NetInfoProvider>
+          </QueryClientProvider>
+        </MigratorWrapper>
+      </GestureHandlerRootView>
     </ThemeProvider>
   );
+};
+
+const MigratorWrapper = ({ children }: { children: React.ReactNode }) => {
+  const { success, error } = useMigrations(db, migrations);
+
+  if (error) {
+    return (
+      <YStack>
+        <Text>Migration error: {error.message}</Text>
+      </YStack>
+    );
+  }
+
+  if (!success) {
+    return (
+      <YStack>
+        <Text>Migration is in progress...</Text>
+      </YStack>
+    );
+  }
+
+  return <>{children}</>;
 };
 
 const ThemeProvider = ({ children }: { children: React.ReactNode }) => {

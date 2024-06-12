@@ -1,15 +1,9 @@
 import { eq } from 'drizzle-orm';
 
+import db from '../db';
 import { Field, NewField, fieldsSchema } from '../db/schemas';
-import getFieldEndpoint from '../endpoints/get-fields';
-import { useDatabase } from '../providers/database-provider';
-import { ExpoSQLiteDatabase } from 'drizzle-orm/expo-sqlite';
-import { SQLJsDatabase } from 'drizzle-orm/sql-js';
 
-export async function synchronizeFields(
-  db: ExpoSQLiteDatabase | SQLJsDatabase,
-  fields: NewField[]
-) {
+export async function synchronizeFields(fields: NewField[]) {
   const res = await Promise.allSettled(
     fields
       ? fields.map(async (field) => {

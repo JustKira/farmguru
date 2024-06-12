@@ -1,17 +1,9 @@
-import { ExpoSQLiteDatabase, drizzle } from 'drizzle-orm/expo-sqlite';
-import { useMigrations } from 'drizzle-orm/expo-sqlite/migrator';
+import { drizzle } from 'drizzle-orm/expo-sqlite';
 import { openDatabaseSync } from 'expo-sqlite/next';
 
-import migrations from '../../drizzle/migrations';
+import * as schema from './schemas';
+const expoDb = openDatabaseSync('farmguru.db');
 
-const expoDb = openDatabaseSync('database.db', {
-  enableChangeListener: true,
-});
-const db = drizzle(expoDb);
+const db = drizzle(expoDb, { schema });
 
-export const initialize = (): Promise<ExpoSQLiteDatabase> => {
-  return Promise.resolve(db);
-};
-export const useMigrationHelper = () => {
-  return useMigrations(db as ExpoSQLiteDatabase, migrations);
-};
+export default db;
