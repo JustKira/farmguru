@@ -21,6 +21,7 @@ export default function NavStackStyled({ options, ...props }: NavStackStyledProp
     headerStyle: {
       backgroundColor: theme.background.get(),
     },
+
     headerTitleStyle: {
       color: theme.foreground.get(),
     },

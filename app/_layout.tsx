@@ -1,5 +1,8 @@
 import { ToastProvider } from '@tamagui/toast';
+import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
+import { useMigrations } from 'drizzle-orm/expo-sqlite/migrator';
 import { useFonts } from 'expo-font';
+import * as NavigationBar from 'expo-navigation-bar';
 import { Stack, SplashScreen } from 'expo-router';
 import React, { useEffect } from 'react';
 import { useColorScheme } from 'react-native';
@@ -8,7 +11,9 @@ import { TamaguiProvider, Theme } from 'tamagui';
 
 import config from '../tamagui.config';
 
+import { AuthProvider } from '~/lib/providers/auth-provider';
 import { DatabaseProvider } from '~/lib/providers/database-provider';
+import { NetInfoProvider } from '~/lib/providers/netinfo-provider';
 
 SplashScreen.preventAutoHideAsync();
 
@@ -25,6 +30,8 @@ export default function RootLayout() {
   );
 }
 
+const queryClient = new QueryClient();
+
 const Wrapper = ({ children }: { children: React.ReactNode }) => {
   const color = useColorScheme();
 
@@ -39,17 +46,28 @@ const Wrapper = ({ children }: { children: React.ReactNode }) => {
     }
   }, [loaded]);
 
+  // useEffect(() => {
+  //   console.log(theme);
+  //   NavigationBar.setBackgroundColorAsync(color === 'dark' ? '#000000' : '#ffffff');
+  // }, [color]);
+
   if (!loaded) return null;
 
   return (
     <ThemeProvider>
-      <DatabaseProvider>
-        <GestureHandlerRootView style={{ flex: 1 }}>
-          <Theme name={'dark'}>
-            <ToastProvider>{children}</ToastProvider>
-          </Theme>
-        </GestureHandlerRootView>
-      </DatabaseProvider>
+      <QueryClientProvider client={queryClient}>
+        <NetInfoProvider>
+          <DatabaseProvider>
+            <AuthProvider>
+              <GestureHandlerRootView style={{ flex: 1 }}>
+                <Theme name={color}>
+                  <ToastProvider>{children}</ToastProvider>
+                </Theme>
+              </GestureHandlerRootView>
+            </AuthProvider>
+          </DatabaseProvider>
+        </NetInfoProvider>
+      </QueryClientProvider>
     </ThemeProvider>
   );
 };
