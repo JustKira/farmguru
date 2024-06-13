@@ -1,4 +1,5 @@
 import { FlashList } from '@shopify/flash-list';
+import { useQuery } from '@tanstack/react-query';
 import { useLiveQuery } from 'drizzle-orm/expo-sqlite';
 import { useRouter } from 'expo-router';
 import { Button } from 'tamagui';
@@ -11,11 +12,15 @@ import { useSynchronizer } from '~/lib/providers/synchronizer-provider';
 import { Text } from '~/tamagui.config';
 
 export default function Home() {
-  const { syncState, forceSync } = useSynchronizer();
+  const { isInitialLoaded, forceSync } = useSynchronizer();
 
   const router = useRouter();
 
-  const { data, updatedAt } = useLiveQuery(db.query.fieldsSchema.findMany());
+  const { data, isLoading, isPending } = useQuery({
+    queryKey: ['fields', 'list'],
+    enabled: isInitialLoaded,
+    queryFn: async () => db.query.fieldsSchema.findMany(),
+  });
 
   return (
     <>
@@ -52,7 +57,7 @@ export default function Home() {
               />
             );
           }}
-          extraData={updatedAt}
+          extraData={isPending || isLoading}
           estimatedItemSize={15}
         />
       </Container>

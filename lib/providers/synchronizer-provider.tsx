@@ -5,6 +5,12 @@ import React, { createContext, useEffect, useState, useCallback } from 'react';
 import { useAuth } from './auth-provider';
 import { useNetInfo } from './netinfo-provider';
 import db from '../db';
+import {
+  fieldsDetailSchema,
+  fieldsMapInfoSchema,
+  fieldsSchema,
+  fieldsScoutPointsSchema,
+} from '../db/schemas';
 import getFieldDetailsEndpoint from '../endpoints/get-field-details';
 import getFieldEndpoint from '../endpoints/get-fields';
 import { fieldDetailsInfoParser } from '../parsers/field-detail-parser';
@@ -35,6 +41,7 @@ type FieldsDetailLoading =
   | 'ERROR';
 
 export interface ContextType {
+  isInitialLoaded: boolean;
   syncState: SyncState;
   syncStateDetailed: Record<string, FieldsDetailLoading>;
   forceSync: () => void;
@@ -83,7 +90,7 @@ const shouldSync = (lastSyncTime: Date | null): boolean => {
 export const SynchronizerProvider: React.FC<{
   children: JSX.Element;
 }> = ({ children }) => {
-  const { user } = useAuth();
+  const { user, status } = useAuth();
 
   const [syncState, setSyncState] = useState<SyncState>(LOADING);
 
@@ -99,6 +106,25 @@ export const SynchronizerProvider: React.FC<{
   const { checking, isConnected } = useNetInfo();
 
   const queryClient = useQueryClient();
+
+  useEffect(() => {
+    const clearDataOnLogout = async () => {
+      if (status === 'LOGOUT') {
+        queryClient.clear();
+        await Promise.all([
+          db.delete(fieldsSchema),
+          db.delete(fieldsMapInfoSchema),
+          db.delete(fieldsScoutPointsSchema),
+          db.delete(fieldsDetailSchema),
+        ]);
+        await setLastSyncTime(undefined);
+        setLastSyncTimeState(null);
+        setSyncState(LOADING);
+      }
+    };
+
+    clearDataOnLogout();
+  }, [status]);
 
   useEffect(() => {
     (async () => {
@@ -133,7 +159,8 @@ export const SynchronizerProvider: React.FC<{
 
   const syncFields = useQuery({
     queryKey: ['sync', 'field', 'list'],
-    enabled: !!user?.accountId && !syncChecking,
+    enabled:
+      !!user?.accountId && !syncChecking && status !== 'UNAUTHENTICATED' && status !== 'LOADING',
     queryFn: async () => {
       if (!shouldSync(lastSyncTime)) {
         console.log('Skipping synchronization, less than 2 hours since last sync.');
@@ -254,7 +281,12 @@ export const SynchronizerProvider: React.FC<{
 
   return (
     <SynchronizerContext.Provider
-      value={{ syncState, syncStateDetailed: fieldsDetailLoading, forceSync }}>
+      value={{
+        syncState,
+        syncStateDetailed: fieldsDetailLoading,
+        forceSync,
+        isInitialLoaded: syncFields.isSuccess,
+      }}>
       {children}
     </SynchronizerContext.Provider>
   );
