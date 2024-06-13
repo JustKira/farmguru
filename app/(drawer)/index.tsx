@@ -1,5 +1,6 @@
 import { FlashList } from '@shopify/flash-list';
 import { useLiveQuery } from 'drizzle-orm/expo-sqlite';
+import { useRouter } from 'expo-router';
 import { Button } from 'tamagui';
 import MapCardSelector from '~/components/(drawer)/MapCardSelector';
 
@@ -11,6 +12,8 @@ import { Text } from '~/tamagui.config';
 
 export default function Home() {
   const { syncState, forceSync } = useSynchronizer();
+
+  const router = useRouter();
 
   const { data, updatedAt } = useLiveQuery(db.query.fieldsSchema.findMany());
 
@@ -26,7 +29,7 @@ export default function Home() {
         </Button>
         <FlashList
           data={data}
-          renderItem={({ item, index }) => {
+          renderItem={({ item }) => {
             const position = item.position as [number, number];
             const coordinates = item.location as [number, number][];
             const initialRegion = {
@@ -41,11 +44,11 @@ export default function Home() {
             });
             return (
               <MapCardSelector
-                index={index}
+                id={item.id}
                 name={item.name}
                 initialRegion={initialRegion}
                 polyCoords={polygonCoordinates}
-                onPress={() => {}}
+                onPress={() => router.push(`/(drawer)/${item.id}`)}
               />
             );
           }}

@@ -42,6 +42,11 @@
         "foregroundImage": "./assets/adaptive-icon.png",
         "backgroundColor": "#ffffff"
       },
+      "config": {
+        "googleMaps": {
+          "apiKey": "AIzaSyC3ZEf3MEM6o4vCDVOt3AGTFPP0DrrJnto"
+        }
+      },
       "package": "com.vais.farmguru"
     },
     "extra": {

@@ -1,8 +1,9 @@
 import MapView, { PROVIDER_GOOGLE, Polygon } from 'react-native-maps';
 import { Button, YStack } from 'tamagui';
+import { useSynchronizer } from '~/lib/providers/synchronizer-provider';
 
 interface MapCardSelectorProps {
-  index: number;
+  id: string;
   name: string;
   initialRegion: {
     latitude: number;
@@ -20,10 +21,12 @@ interface MapCardSelectorProps {
 const MapCardSelector: React.FC<MapCardSelectorProps> = ({
   initialRegion,
   polyCoords,
-  index,
+  id,
   name,
   onPress,
 }) => {
+  const { syncStateDetailed } = useSynchronizer();
+
   return (
     <YStack
       flex={1}
@@ -35,7 +38,21 @@ const MapCardSelector: React.FC<MapCardSelectorProps> = ({
       borderColor="$muted"
       borderRadius="$2"
       borderWidth="$0.5">
-      <Button onPress={onPress}>View {name}</Button>
+      <Button
+        disabled={
+          syncStateDetailed[id] === 'FETCHING_DETAILS' ||
+          syncStateDetailed[id] === 'FETCHING_MAP_DETAILS' ||
+          syncStateDetailed[id] === 'FETCHING_SCOUT_POINTS'
+        }
+        onPress={onPress}>
+        {syncStateDetailed[id] === 'FETCHING_DETAILS'
+          ? 'Loading. Details'
+          : syncStateDetailed[id] === 'FETCHING_MAP_DETAILS'
+            ? 'Loading. Map Details'
+            : syncStateDetailed[id] === 'FETCHING_SCOUT_POINTS'
+              ? 'Loading. Scout Points'
+              : name}
+      </Button>
       <MapView
         initialRegion={initialRegion}
         provider={PROVIDER_GOOGLE}

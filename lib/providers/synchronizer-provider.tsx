@@ -7,9 +7,16 @@ import { useNetInfo } from './netinfo-provider';
 import db from '../db';
 import getFieldDetailsEndpoint from '../endpoints/get-field-details';
 import getFieldEndpoint from '../endpoints/get-fields';
+import { fieldDetailsInfoParser } from '../parsers/field-detail-parser';
+import { fieldDetailsImageParser } from '../parsers/field-map-detail';
 import { fieldParser } from '../parsers/field-parser';
+import { fieldScoutPointParser } from '../parsers/field-scout-point-parser';
+import { synchronizeFieldsDetails } from '../sync/synchronize-field-details';
+import { synchronizeFieldMapDetails } from '../sync/synchronize-field-map-details';
+import { synchronizeFieldScoutPoint } from '../sync/synchronize-field-scout-points';
 import { synchronizeFields } from '../sync/synchronize-fields';
 
+import { UserData } from '~/types/global.types';
 import {
   SyncState,
   NO_CONNECTION_NO_CACHE,
@@ -19,13 +26,17 @@ import {
   SYNCED,
   ERROR,
 } from '~/utils/sync-states';
-import { fieldDetailsInfoParser } from '../parsers/field-detail-parser';
-import { synchronizeFieldsDetails } from '../sync/synchronize-field-details';
 
-type FieldsDetailLoading = 'FETCHING_DETAILS' | 'FETCHING_MAP_DETAILS' | 'FETCHING_SCOUT_POINTS';
+type FieldsDetailLoading =
+  | 'FETCHING_DETAILS'
+  | 'FETCHING_MAP_DETAILS'
+  | 'FETCHING_SCOUT_POINTS'
+  | 'COMPLETED'
+  | 'ERROR';
 
 export interface ContextType {
   syncState: SyncState;
+  syncStateDetailed: Record<string, FieldsDetailLoading>;
   forceSync: () => void;
 }
 
@@ -79,6 +90,8 @@ export const SynchronizerProvider: React.FC<{
   const [syncChecking, setSyncChecking] = useState<boolean>(true);
   const [lastSyncTime, setLastSyncTimeState] = useState<Date | null>(null);
 
+  const [completedQueries, setCompletedQueries] = useState<number>(0);
+
   const [fieldsDetailLoading, setFieldsDetailLoading] = useState<
     Record<string, FieldsDetailLoading>
   >({});
@@ -105,8 +118,21 @@ export const SynchronizerProvider: React.FC<{
     console.log('Sync state:', syncState);
   }, [syncState]);
 
+  useEffect(() => {
+    (async () => {
+      console.log('Completed queries:', completedQueries);
+      if (syncFieldsDetails.length === completedQueries && syncState === SYNCING) {
+        const now = new Date();
+        await setLastSyncTime(now);
+        setLastSyncTimeState(now);
+        console.log('Last sync time updated:', now);
+        setSyncState(SYNCED);
+      }
+    })();
+  }, [completedQueries]);
+
   const syncFields = useQuery({
-    queryKey: ['sync-fields'],
+    queryKey: ['sync', 'field', 'list'],
     enabled: !!user?.accountId && !syncChecking,
     queryFn: async () => {
       if (!shouldSync(lastSyncTime)) {
@@ -128,13 +154,6 @@ export const SynchronizerProvider: React.FC<{
         await synchronizeFields(parsedFields ?? []);
         console.log('Fields synchronized to database.');
 
-        const now = new Date();
-        await setLastSyncTime(now);
-        setLastSyncTimeState(now);
-        console.log('Last sync time updated:', now);
-
-        setSyncState(SYNCED);
-
         return parsedFields;
       } catch (error) {
         setSyncState(ERROR);
@@ -149,35 +168,76 @@ export const SynchronizerProvider: React.FC<{
   const syncFieldsDetails = useQueries({
     queries:
       syncFields.data?.map((field) => ({
-        queryKey: ['sync', 'field', 'details', field.id],
+        queryKey: ['sync', 'field', 'detail', field.id],
         queryFn: async () => {
-          const actionMaker = user?.accountId as string;
+          if (!shouldSync(lastSyncTime)) {
+            console.log('Skipping synchronization, less than 2 hours since last sync.');
+            setSyncState(SYNCED);
+
+            setFieldsDetailLoading((prev) => ({
+              ...prev,
+              [field.id]: 'COMPLETED',
+            }));
+
+            return await db.query.fieldsSchema.findFirst({
+              where(fields, operators) {
+                return operators.eq(fields.id, field.id);
+              },
+            });
+          }
+
+          const _user = user as UserData;
           console.log('Getting field details for:', field.id);
           setFieldsDetailLoading((prev) => ({
             ...prev,
             [field.id]: 'FETCHING_DETAILS',
           }));
-          const details = await getFieldDetailsEndpoint(field.id, actionMaker);
+          const details = await getFieldDetailsEndpoint(field.id, _user.accountId);
 
           if (!details) {
             throw new Error('No details found');
           }
 
           const parsedDetails = fieldDetailsInfoParser(details);
+          const parsedMapDetails = fieldDetailsImageParser(details);
+          const parsedScoutPoints = fieldScoutPointParser(details.markersList);
+          const syncedDetails = await synchronizeFieldsDetails(parsedDetails);
 
-          await synchronizeFieldsDetails([parsedDetails]);
+          setFieldsDetailLoading((prev) => ({
+            ...prev,
+            [field.id]: 'FETCHING_MAP_DETAILS',
+          }));
 
-          return parsedDetails;
-          // await Promise.all([
-          //   detailsProcessor(fields, field, user),
-          //   mapProcessor(fields, field, user),
-          // ]);
+          const syncedMapDetails = await synchronizeFieldMapDetails(
+            field.id,
+            parsedMapDetails,
+            _user
+          );
+
+          setFieldsDetailLoading((prev) => ({
+            ...prev,
+            [field.id]: 'FETCHING_SCOUT_POINTS',
+          }));
+
+          await synchronizeFieldScoutPoint(parsedScoutPoints, _user);
+
+          setFieldsDetailLoading((prev) => ({
+            ...prev,
+            [field.id]: 'COMPLETED',
+          }));
+
+          setCompletedQueries((prev) => prev + 1);
+
+          return {
+            details: syncedDetails,
+            mapDetails: syncedMapDetails,
+          };
         },
-        enabled: !!user?.accountId && !syncChecking && !!syncFields.data,
+        enabled: !!user?.accountId && !syncChecking && syncFields.isSuccess,
       })) ?? [],
   });
 
-  const forceSync = useCallback(async () => {
+  const forceSync = async () => {
     if (!isConnected) {
       return;
     }
@@ -186,13 +246,15 @@ export const SynchronizerProvider: React.FC<{
     setSyncState(SYNCING);
     await setLastSyncTime(undefined);
     setLastSyncTimeState(null);
-    await queryClient.invalidateQueries({
-      queryKey: ['sync-fields'],
-    });
-  }, [queryClient]);
+
+    syncFields.refetch();
+    setCompletedQueries(0);
+    syncFieldsDetails.forEach((query) => query.refetch());
+  };
 
   return (
-    <SynchronizerContext.Provider value={{ syncState, forceSync }}>
+    <SynchronizerContext.Provider
+      value={{ syncState, syncStateDetailed: fieldsDetailLoading, forceSync }}>
       {children}
     </SynchronizerContext.Provider>
   );
