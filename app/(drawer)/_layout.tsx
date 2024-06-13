@@ -51,18 +51,10 @@ const DrawerLayout = () => {
             }}
           />
           <Drawer.Screen
-            name="[fid]"
+            name="(tabs)/[fid]"
             options={{
               headerTitle: 'Field',
               drawerItemStyle: { display: 'none' },
-              // drawerIcon: ({ size, color }) => (
-              //   <MaterialIcons name="border-bottom" size={size} color={color} />
-              // ),
-              // headerRight: () => (
-              //   <Link href="/modal" asChild>
-              //     <HeaderButton />
-              //   </Link>
-              // ),
             }}
           />
         </Drawer>

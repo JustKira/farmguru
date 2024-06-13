@@ -4,7 +4,7 @@ import { Sheet } from 'tamagui';
 export default function ConfiguredSheet({ children }: { children?: React.ReactNode }) {
   const snapPoints = useMemo(() => [85, 50, 35], []);
 
-  const [sheetPosition, setSheetPosition] = useState(0);
+  const [sheetPosition, setSheetPosition] = useState(snapPoints.length - 1);
   return (
     <Sheet
       open
