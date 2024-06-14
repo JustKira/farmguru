@@ -1,14 +1,11 @@
-import { Slot, Tabs, useGlobalSearchParams } from 'expo-router';
-import { StyleSheet } from 'react-native';
-import { useTheme } from 'tamagui';
 import { FontAwesome, FontAwesome5, Ionicons, MaterialCommunityIcons } from '@expo/vector-icons';
-import { TabBarIcon } from '~/components/TabBarIcon';
+import { Tabs, useGlobalSearchParams } from 'expo-router';
+import { useTheme } from 'tamagui';
+
 import { FieldSharedDataProvider } from '~/lib/providers/field-shared-data-provider';
 
 export default function TabLayout() {
   const { fid } = useGlobalSearchParams();
-
-  console.log('fidxx', fid);
 
   const theme = useTheme();
   return (

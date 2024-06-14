@@ -110,6 +110,10 @@ export const SynchronizerProvider: React.FC<{
   useEffect(() => {
     const clearDataOnLogout = async () => {
       if (status === 'LOGOUT') {
+        queryClient.cancelQueries({
+          queryKey: ['sync'],
+          exact: false,
+        });
         queryClient.clear();
         await Promise.all([
           db.delete(fieldsSchema),

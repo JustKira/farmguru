@@ -1,10 +1,11 @@
+import { MaterialIcons } from '@expo/vector-icons';
 import { FlashList } from '@shopify/flash-list';
 import { useQuery } from '@tanstack/react-query';
 import { useLiveQuery } from 'drizzle-orm/expo-sqlite';
 import { useRouter } from 'expo-router';
-import { Button } from 'tamagui';
-import MapCardSelector from '~/components/(drawer)/MapCardSelector';
+import { XStack, Button, Stack, YStack } from 'tamagui';
 
+import MapCardSelector from '~/components/(drawer)/MapCardSelector';
 import { Container } from '~/components/Container';
 import NavStackStyled from '~/components/NavStackStyled';
 import db from '~/lib/db';
@@ -12,7 +13,7 @@ import { useSynchronizer } from '~/lib/providers/synchronizer-provider';
 import { Text } from '~/tamagui.config';
 
 export default function Home() {
-  const { isInitialLoaded, forceSync } = useSynchronizer();
+  const { isInitialLoaded, forceSync, syncState } = useSynchronizer();
 
   const router = useRouter();
 
@@ -26,12 +27,25 @@ export default function Home() {
     <>
       <NavStackStyled options={{ title: 'Home' }} />
       <Container>
-        <Button
-          onPress={() => {
-            forceSync();
-          }}>
-          Refresh
-        </Button>
+        <XStack justifyContent="space-between" alignItems="center">
+          <Stack>
+            <Text size="$4" color="$primary">
+              {syncState === 'SYNCING'
+                ? 'Data is being Updated'
+                : syncState === 'ERROR'
+                  ? 'Error in updating data'
+                  : 'Data is Updated'}
+            </Text>
+          </Stack>
+          <Button
+            aspectRatio={1}
+            padding={0}
+            icon={<MaterialIcons name="refresh" size={20} color="white" />}
+            onPress={() => {
+              forceSync();
+            }}
+          />
+        </XStack>
         <FlashList
           data={data}
           renderItem={({ item }) => {

@@ -17,6 +17,11 @@ const fieldsDetailSchema = sqliteTable('fieldsDetail', {
   nutrientsPercentage: text('nutrientsPercentage', { mode: 'json' }),
   stressPercentage: text('stressPercentage', { mode: 'json' }),
 
+  soilMoisture: numeric('soilMoisture'),
+  daysToWilting: numeric('daysToWilting'),
+  nextIrrigation: text('nextIrrigation'),
+  advisedWater: numeric('advisedWater'),
+
   growthTrend: numeric('growthTrend'),
   nutrientsTrend: numeric('nutrientsTrend'),
   stressTrend: numeric('stressTrend'),

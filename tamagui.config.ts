@@ -4,7 +4,7 @@ import { createMedia } from '@tamagui/react-native-media-driver';
 import { shorthands } from '@tamagui/shorthands';
 import { themes, tokens } from '@tamagui/themes';
 import { light } from '@tamagui/themes/types/generated-new';
-import { createTamagui, styled, SizableText, H1, YStack } from 'tamagui';
+import { createTamagui, styled, SizableText, H1, YStack, Button as BaseButton } from 'tamagui';
 
 const animations = createAnimations({
   bouncy: {
@@ -29,6 +29,8 @@ const animations = createAnimations({
 const headingFont = createInterFont();
 
 const bodyFont = createInterFont();
+
+export const Button = styled(BaseButton, {});
 
 export const Container = styled(YStack, {
   flex: 1,

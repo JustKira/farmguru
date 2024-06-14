@@ -33,6 +33,10 @@ export function fieldDetailsInfoParser(data: FarmFieldData): NewFieldDetail {
     lastScoutUpdate,
     cropAge: cropAge.toString(),
     cropType: data.cropType,
+    soilMoisture: data.tabs.irrigrobo.irrigData[0].value.toString(),
+    daysToWilting: data.tabs.irrigrobo.irrigData[1].value.toString(),
+    nextIrrigation: data.tabs.irrigrobo.irrigData[2].value.toString(),
+    advisedWater: data.tabs.irrigrobo.irrigData[3].value.toString(),
     growthPercentage: [growth[1].value, growth[2].value, growth[3].value, growth[4].value],
     nutrientsPercentage: [
       nutrients[1].value,

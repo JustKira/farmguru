@@ -1,6 +1,7 @@
 import MapView, { PROVIDER_GOOGLE, Polygon } from 'react-native-maps';
-import { Button, YStack } from 'tamagui';
+import { YStack } from 'tamagui';
 import { useSynchronizer } from '~/lib/providers/synchronizer-provider';
+import { Button } from '~/tamagui.config';
 
 interface MapCardSelectorProps {
   id: string;
@@ -39,6 +40,20 @@ const MapCardSelector: React.FC<MapCardSelectorProps> = ({
       borderRadius="$2"
       borderWidth="$0.5">
       <Button
+        backgroundColor={
+          syncStateDetailed[id] === 'FETCHING_DETAILS' ||
+          syncStateDetailed[id] === 'FETCHING_MAP_DETAILS' ||
+          syncStateDetailed[id] === 'FETCHING_SCOUT_POINTS'
+            ? '$foregroundMuted'
+            : '$primary'
+        }
+        color={
+          syncStateDetailed[id] === 'FETCHING_DETAILS' ||
+          syncStateDetailed[id] === 'FETCHING_MAP_DETAILS' ||
+          syncStateDetailed[id] === 'FETCHING_SCOUT_POINTS'
+            ? '$foreground'
+            : '$background'
+        }
         disabled={
           syncStateDetailed[id] === 'FETCHING_DETAILS' ||
           syncStateDetailed[id] === 'FETCHING_MAP_DETAILS' ||

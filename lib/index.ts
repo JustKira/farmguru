@@ -1,1 +1,1 @@
-export const BACKEND_API = process.env.EXPO_PUBLIC_BACKEND_API;
+export const BACKEND_API = 'https://api.vais.ai';
