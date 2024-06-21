@@ -26,7 +26,7 @@ export const useCategories = ({ color }: { color: string }) => {
       },
       {
         label: 'Dont Know',
-        value: 'dont know',
+        value: 'dontknow',
         icon: () => <FontAwesome5 name="question" size={20} color={color} />,
       },
     ];
