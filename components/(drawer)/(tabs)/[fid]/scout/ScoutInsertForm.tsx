@@ -58,7 +58,7 @@ const categoryItems = [
   },
   {
     text: 'Dont Know',
-    value: 'dont know',
+    value: 'dontknow',
     icon: (color: string) => <FontAwesome5 name="question" size={20} color={color} />,
   },
 ];
