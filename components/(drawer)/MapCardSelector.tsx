@@ -41,32 +41,42 @@ const MapCardSelector: React.FC<MapCardSelectorProps> = ({
       borderWidth="$0.5">
       <Button
         backgroundColor={
+          syncStateDetailed[id] === 'NO_ANALYTICS' ||
           syncStateDetailed[id] === 'FETCHING_DETAILS' ||
           syncStateDetailed[id] === 'FETCHING_MAP_DETAILS' ||
+          syncStateDetailed[id] === 'SYNCING_SCOUT_POINTS' ||
           syncStateDetailed[id] === 'FETCHING_SCOUT_POINTS'
             ? '$foregroundMuted'
             : '$primary'
         }
         color={
+          syncStateDetailed[id] === 'NO_ANALYTICS' ||
           syncStateDetailed[id] === 'FETCHING_DETAILS' ||
           syncStateDetailed[id] === 'FETCHING_MAP_DETAILS' ||
+          syncStateDetailed[id] === 'SYNCING_SCOUT_POINTS' ||
           syncStateDetailed[id] === 'FETCHING_SCOUT_POINTS'
             ? '$foreground'
             : '$background'
         }
         disabled={
+          syncStateDetailed[id] === 'NO_ANALYTICS' ||
           syncStateDetailed[id] === 'FETCHING_DETAILS' ||
           syncStateDetailed[id] === 'FETCHING_MAP_DETAILS' ||
+          syncStateDetailed[id] === 'SYNCING_SCOUT_POINTS' ||
           syncStateDetailed[id] === 'FETCHING_SCOUT_POINTS'
         }
         onPress={onPress}>
-        {syncStateDetailed[id] === 'FETCHING_DETAILS'
-          ? 'Loading. Details'
-          : syncStateDetailed[id] === 'FETCHING_MAP_DETAILS'
-            ? 'Loading. Map Details'
-            : syncStateDetailed[id] === 'FETCHING_SCOUT_POINTS'
-              ? 'Loading. Scout Points'
-              : name}
+        {syncStateDetailed[id] === 'SYNCING_SCOUT_POINTS'
+          ? 'Syncing. Scout Points'
+          : syncStateDetailed[id] === 'FETCHING_DETAILS'
+            ? 'Loading. Details'
+            : syncStateDetailed[id] === 'FETCHING_MAP_DETAILS'
+              ? 'Loading. Map Details'
+              : syncStateDetailed[id] === 'FETCHING_SCOUT_POINTS'
+                ? 'Loading. Scout Points'
+                : syncStateDetailed[id] === 'NO_ANALYTICS'
+                  ? 'Analytics not available'
+                  : name}
       </Button>
       <MapView
         initialRegion={initialRegion}

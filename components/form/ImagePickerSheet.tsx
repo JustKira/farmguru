@@ -1,6 +1,6 @@
 import { FontAwesome } from '@expo/vector-icons';
 import * as IP from 'expo-image-picker';
-import React, { useState, useImperativeHandle, forwardRef } from 'react';
+import React, { useState, useImperativeHandle, forwardRef, useEffect } from 'react';
 import { View, Text, Image } from 'react-native';
 import { Button, Sheet, YStack, useTheme } from 'tamagui';
 
@@ -12,14 +12,19 @@ export type ImagePickerSheetHandle = {
 
 type ImagePickerSheetProps = {
   children?: React.ReactNode;
+  value?: string;
   onImageSelected?: (uri: string) => void;
 };
 
 const ImagePickerSheet = forwardRef<ImagePickerSheetHandle, ImagePickerSheetProps>(
-  ({ children, onImageSelected }, ref) => {
+  ({ children, onImageSelected, value }, ref) => {
     const theme = useTheme();
     const [open, setOpen] = useState(false);
-    const [imageUri, setImageUri] = useState<string | null>(null);
+    const [imageUri, setImageUri] = useState<string | null>(value ?? null);
+
+    useEffect(() => {
+      setImageUri(value ?? null);
+    }, [value]);
 
     const openCamera = async () => {
       const permissionResult = await IP.requestCameraPermissionsAsync();

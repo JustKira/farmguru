@@ -1,9 +1,8 @@
 import { MaterialIcons } from '@expo/vector-icons';
 import { FlashList } from '@shopify/flash-list';
 import { useQuery } from '@tanstack/react-query';
-import { useLiveQuery } from 'drizzle-orm/expo-sqlite';
 import { useRouter } from 'expo-router';
-import { XStack, Button, Stack, YStack } from 'tamagui';
+import { XStack, Button, Stack } from 'tamagui';
 
 import MapCardSelector from '~/components/(drawer)/MapCardSelector';
 import { Container } from '~/components/Container';

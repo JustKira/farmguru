@@ -64,6 +64,7 @@ export default function Scout() {
                 // router.navigate(`(drawer)/(tabs)/${params.fid}/scout/${point.id}`);
                 // setShow(true);
                 // setSelectedPoint(point as FieldScoutPointSchema);
+                scoutPointDetailsRef.current?.openScoutPointDetails(point);
                 console.log('Marker Pressed', point.id);
               }}
             />
@@ -95,7 +96,7 @@ export default function Scout() {
           />
         </YStack>
       </ConfiguredSheet>
-      <ScoutInsertForm ref={scoutInsertFormRef} />
+      <ScoutInsertForm fid={field.id} ref={scoutInsertFormRef} />
       <ScoutPointDetails ref={scoutPointDetailsRef} />
     </ZStack>
   );

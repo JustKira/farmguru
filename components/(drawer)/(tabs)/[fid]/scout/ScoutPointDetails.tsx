@@ -3,14 +3,18 @@ import { format } from 'date-fns';
 import { date } from 'drizzle-orm/mysql-core';
 import { Image } from 'expo-image';
 import React, { forwardRef, useImperativeHandle, useState, useMemo, useRef } from 'react';
+import { TouchableOpacity } from 'react-native';
 import { Marker } from 'react-native-maps';
 import { Button, Paragraph, ScrollView, Sheet, XStack, YStack, useTheme } from 'tamagui';
+
+import ScoutInsertForm, { ScoutInsertFormHandle } from './ScoutInsertForm';
 
 import { Container } from '~/components/Container';
 import MapSheet, { MapSheetHandle } from '~/components/general/MapSheet';
 import PreviewImageSheet, { PreviewImageSheetHandle } from '~/components/general/PreviewImageSheet';
-import { FieldsScoutPoints } from '~/lib/db/schemas';
+import { Field, FieldsScoutPoints } from '~/lib/db/schemas';
 import { useAudioPlayer } from '~/lib/hooks/useAudioPLayer';
+import { useSharedFieldData } from '~/lib/providers/field-shared-data-provider';
 import { Text } from '~/tamagui.config';
 import { Severity } from '~/types/global.types';
 import { useCategories } from '~/utils/categories';
@@ -23,6 +27,9 @@ export type ScoutPointDetailsHandle = {
 
 const ScoutPointDetails = forwardRef<ScoutPointDetailsHandle>((props, ref) => {
   const [open, setOpen] = useState(false);
+  const shared = useSharedFieldData();
+  const field = shared.field as Field;
+  const scoutInsertFormRef = useRef<ScoutInsertFormHandle>(null);
   const [selectedPoint, setSelectedPoint] = useState<FieldsScoutPoints | undefined>(undefined);
   const snapPoints = useMemo(() => [82.5], []);
   const theme = useTheme();
@@ -91,6 +98,27 @@ const ScoutPointDetails = forwardRef<ScoutPointDetailsHandle>((props, ref) => {
         <Sheet.Frame>
           <Container>
             <ScrollView>
+              <TouchableOpacity
+                onPress={() => {
+                  if (selectedPoint) {
+                    scoutInsertFormRef.current?.openScoutUpdateForm(
+                      {
+                        category: selectedPoint.category.toLocaleLowerCase(),
+                        severity: selectedPoint.severity.toLocaleLowerCase(),
+                        createdOn: selectedPoint.date.toISOString(),
+                        location: selectedPoint.location,
+                        notes: selectedPoint.notes ?? undefined,
+                        photoUri: selectedPoint.photosFiles?.[0] ?? undefined,
+                        voiceNoteUri: selectedPoint.voiceNoteFile ?? undefined,
+                      },
+                      selectedPoint.id
+                    );
+                  }
+                }}>
+                <Text size="$6" color="$primary">
+                  Edit
+                </Text>
+              </TouchableOpacity>
               <YStack gap="$4">
                 <YStack gap="$2">
                   <Text size="$4" color="$foregroundMuted">
@@ -244,6 +272,7 @@ const ScoutPointDetails = forwardRef<ScoutPointDetailsHandle>((props, ref) => {
           <></>
         )}
       </MapSheet>
+      <ScoutInsertForm fid={field.id} ref={scoutInsertFormRef} />
     </>
   );
 });

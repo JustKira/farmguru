@@ -6,6 +6,7 @@ import { useAuth } from './auth-provider';
 import { useNetInfo } from './netinfo-provider';
 import db from '../db';
 import {
+  FieldsScoutPoints,
   fieldsDetailSchema,
   fieldsMapInfoSchema,
   fieldsSchema,
@@ -19,7 +20,10 @@ import { fieldParser } from '../parsers/field-parser';
 import { fieldScoutPointParser } from '../parsers/field-scout-point-parser';
 import { synchronizeFieldsDetails } from '../sync/synchronize-field-details';
 import { synchronizeFieldMapDetails } from '../sync/synchronize-field-map-details';
-import { synchronizeFieldScoutPoint } from '../sync/synchronize-field-scout-points';
+import {
+  synchronizeFieldScoutPoint,
+  synchronizeScoutPointInsertUpdate,
+} from '../sync/synchronize-field-scout-points';
 import { synchronizeFields } from '../sync/synchronize-fields';
 
 import { UserData } from '~/types/global.types';
@@ -32,12 +36,15 @@ import {
   SYNCED,
   ERROR,
 } from '~/utils/sync-states';
+import useSyncScoutPoints from '../sync/hooks/synchronize-fields-scout-point';
 
 type FieldsDetailLoading =
   | 'FETCHING_DETAILS'
   | 'FETCHING_MAP_DETAILS'
   | 'FETCHING_SCOUT_POINTS'
+  | 'SYNCING_SCOUT_POINTS'
   | 'COMPLETED'
+  | 'NO_ANALYTICS'
   | 'ERROR';
 
 export interface ContextType {
@@ -107,6 +114,8 @@ export const SynchronizerProvider: React.FC<{
 
   const queryClient = useQueryClient();
 
+  const pointsSynchronizer = useSyncScoutPoints(isConnected, user ?? undefined);
+
   useEffect(() => {
     const clearDataOnLogout = async () => {
       if (status === 'LOGOUT') {
@@ -172,6 +181,31 @@ export const SynchronizerProvider: React.FC<{
 
         return await db.query.fieldsSchema.findMany();
       }
+
+      try {
+        if (!isConnected)
+          return console.log('No internet connection Skipping synchronization... Of Scout Points');
+        const _user = user as UserData;
+        const scoutPoints = await db.query.fieldsScoutPointsSchema.findMany({
+          where(fields, operators) {
+            return operators.and(operators.eq(fields.isDirty, true));
+          },
+        });
+
+        await Promise.all(
+          scoutPoints.map(async (point) => {
+            await synchronizeScoutPointInsertUpdate(
+              point as FieldsScoutPoints,
+              point.fieldId,
+              _user,
+              !point.isNew
+            );
+          })
+        );
+      } catch (error) {
+        console.warn('Error synchronizing scout points:', error);
+      }
+
       try {
         console.log('Starting synchronization...');
         setSyncState(SYNCING);
@@ -205,16 +239,29 @@ export const SynchronizerProvider: React.FC<{
             console.log('Skipping synchronization, less than 2 hours since last sync.');
             setSyncState(SYNCED);
 
-            setFieldsDetailLoading((prev) => ({
-              ...prev,
-              [field.id]: 'COMPLETED',
-            }));
+            try {
+              const res = await db.query.fieldsSchema.findFirst({
+                where(fields, operators) {
+                  return operators.eq(fields.id, field.id);
+                },
+              });
 
-            return await db.query.fieldsSchema.findFirst({
-              where(fields, operators) {
-                return operators.eq(fields.id, field.id);
-              },
-            });
+              setFieldsDetailLoading((prev) => ({
+                ...prev,
+                [field.id]: 'COMPLETED',
+              }));
+
+              return res;
+            } catch (_e) {
+              setFieldsDetailLoading((prev) => ({
+                ...prev,
+                [field.id]: 'NO_ANALYTICS',
+              }));
+              return {
+                details: null,
+                mapDetails: null,
+              };
+            }
           }
 
           const _user = user as UserData;
@@ -227,6 +274,17 @@ export const SynchronizerProvider: React.FC<{
 
           if (!details) {
             throw new Error('No details found');
+          }
+
+          if (details.hasAnalytics === false) {
+            setFieldsDetailLoading((prev) => ({
+              ...prev,
+              [field.id]: 'NO_ANALYTICS',
+            }));
+            return {
+              details: null,
+              mapDetails: null,
+            };
           }
 
           const parsedDetails = fieldDetailsInfoParser(details);

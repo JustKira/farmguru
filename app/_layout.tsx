@@ -14,6 +14,8 @@ import config, { Text } from '../tamagui.config';
 import db from '~/lib/db';
 import { AuthProvider } from '~/lib/providers/auth-provider';
 import { NetInfoProvider } from '~/lib/providers/netinfo-provider';
+import { CustomToast } from '~/components/Toast';
+import { SafeToastViewport } from '~/components/ToastSafeView';
 
 SplashScreen.preventAutoHideAsync();
 
@@ -62,7 +64,11 @@ const Wrapper = ({ children }: { children: React.ReactNode }) => {
               <NetInfoProvider>
                 <AuthProvider>
                   <Theme name={color}>
-                    <ToastProvider>{children}</ToastProvider>
+                    <ToastProvider>
+                      {children}
+                      <SafeToastViewport />
+                      <CustomToast />
+                    </ToastProvider>
                   </Theme>
                 </AuthProvider>
               </NetInfoProvider>

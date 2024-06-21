@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import { TouchableOpacity } from 'react-native';
 import { YStack, XStack, useWindowDimensions, useTheme } from 'tamagui';
 
@@ -15,19 +15,25 @@ type HorizontalButtonsProps = {
   onClick: (value: string) => void;
   square?: boolean;
   defaultSelected?: string;
+  value: string;
 };
 
 export const HorizontalButtons: React.FC<HorizontalButtonsProps> = ({
   items,
   onClick,
   square = true,
+  value,
   defaultSelected,
 }) => {
   const { width } = useWindowDimensions();
   const theme = useTheme();
-  const [selectedValue, setSelectedValue] = useState<string | undefined>(defaultSelected);
+  const [selectedValue, setSelectedValue] = useState<string | undefined>(value ?? defaultSelected);
 
   const buttonSize = square ? width / items.length - 15 : width / items.length - 15;
+
+  useEffect(() => {
+    setSelectedValue(value);
+  }, [value]);
 
   const handlePress = (value: string) => {
     setSelectedValue(value);
