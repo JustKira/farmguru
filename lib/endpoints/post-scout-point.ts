@@ -11,7 +11,7 @@ interface ScoutPoint {
   Notes?: string;
   Status: string;
   Photos?: string[];
-  VoiceNotes?: string;
+  VoiceNote?: string;
 }
 
 export default async function createUpdateScoutPointEndpoint(data: ScoutPoint) {

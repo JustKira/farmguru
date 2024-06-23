@@ -1,8 +1,7 @@
 import { format } from 'date-fns';
 import { useMemo, useState } from 'react';
-import { H6, ScrollView, Sheet, XStack, YStack } from 'tamagui';
+import { ScrollView, Sheet, XStack, YStack } from 'tamagui';
 
-import { Container } from '~/components/Container';
 import { FieldDetail } from '~/lib/db/schemas';
 import { useSharedFieldData } from '~/lib/providers/field-shared-data-provider';
 import { Text } from '~/tamagui.config';
@@ -56,7 +55,7 @@ export default function ConfiguredSheet({ children, screen }: ConfiguredSheetPro
               <Text size="$5">{details?.cropAge}</Text>
             </YStack>
             <YStack aspectRatio={1}>
-              <Text size="$3">Crop Type</Text>
+              <Text size="$3">Last Update</Text>
               <Text size="$5">{lastUpdate ? format(new Date(lastUpdate), 'yyyy/MM/dd') : ''}</Text>
             </YStack>
           </XStack>

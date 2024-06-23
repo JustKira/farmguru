@@ -7,6 +7,7 @@ import { useNetInfo } from './netinfo-provider';
 import db from '../db';
 import {
   FieldsScoutPoints,
+  farmsSchema,
   fieldsDetailSchema,
   fieldsMapInfoSchema,
   fieldsSchema,
@@ -37,6 +38,10 @@ import {
   ERROR,
 } from '~/utils/sync-states';
 import useSyncScoutPoints from '../sync/hooks/synchronize-fields-scout-point';
+import getFarmsEndpoint from '../endpoints/get-farms';
+import { farmParser } from '../parsers/farm-parser';
+import { synchronizeFarms } from '../sync/synchronize-farm';
+import useSyncIrrigationPoints from '../sync/hooks/synchronize-irrigation';
 
 type FieldsDetailLoading =
   | 'FETCHING_DETAILS'
@@ -114,7 +119,8 @@ export const SynchronizerProvider: React.FC<{
 
   const queryClient = useQueryClient();
 
-  const pointsSynchronizer = useSyncScoutPoints(isConnected, user ?? undefined);
+  useSyncScoutPoints(isConnected, user ?? undefined);
+  useSyncIrrigationPoints(isConnected, user ?? undefined);
 
   useEffect(() => {
     const clearDataOnLogout = async () => {
@@ -125,6 +131,7 @@ export const SynchronizerProvider: React.FC<{
         });
         queryClient.clear();
         await Promise.all([
+          db.delete(farmsSchema),
           db.delete(fieldsSchema),
           db.delete(fieldsMapInfoSchema),
           db.delete(fieldsScoutPointsSchema),
@@ -213,10 +220,11 @@ export const SynchronizerProvider: React.FC<{
         const actionMaker = user?.accountId as string;
 
         const fields = await getFieldEndpoint(actionMaker);
-
+        const farms = await getFarmsEndpoint(actionMaker);
         const parsedFields = fields?.map(fieldParser);
-
+        const parsedFarms = farms?.map(farmParser);
         await synchronizeFields(parsedFields ?? []);
+        await synchronizeFarms(parsedFarms ?? []);
         console.log('Fields synchronized to database.');
 
         return parsedFields;

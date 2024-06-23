@@ -13,13 +13,37 @@ import { Text } from '~/tamagui.config';
 
 export default function Home() {
   const { isInitialLoaded, forceSync, syncState } = useSynchronizer();
-
   const router = useRouter();
 
-  const { data, isLoading, isPending } = useQuery({
+  const farmsQuery = useQuery({
+    queryKey: ['farms', 'list'],
+    enabled: isInitialLoaded,
+    queryFn: async () => db.query.farmsSchema.findMany(),
+  });
+
+  const fieldsQuery = useQuery({
     queryKey: ['fields', 'list'],
     enabled: isInitialLoaded,
     queryFn: async () => db.query.fieldsSchema.findMany(),
+  });
+
+  if (farmsQuery.isLoading || fieldsQuery.isLoading) {
+    return <Text>Loading...</Text>;
+  }
+
+  if (farmsQuery.isError || fieldsQuery.isError) {
+    return <Text>Error loading data</Text>;
+  }
+
+  const farms = farmsQuery.data;
+  const fields = fieldsQuery.data;
+
+  // Group fields by farm
+  const farmsWithFields = farms?.map((farm) => {
+    return {
+      ...farm,
+      fields: fields?.filter((field) => field.farmId === farm.id),
+    };
   });
 
   return (
@@ -46,31 +70,69 @@ export default function Home() {
           />
         </XStack>
         <FlashList
-          data={data}
-          renderItem={({ item }) => {
-            const position = item.position as [number, number];
-            const coordinates = item.location as [number, number][];
-            const initialRegion = {
-              latitude: position[0],
-              longitude: position[1],
-              latitudeDelta: 0.005,
-              longitudeDelta: 0.005,
-            };
+          data={farmsWithFields}
+          renderItem={({ item: farm }) => (
+            <>
+              <Text size={'$6'}>{farm.name}</Text>
 
-            const polygonCoordinates = coordinates.map((coordinate) => {
-              return { latitude: coordinate[0], longitude: coordinate[1] };
-            });
-            return (
-              <MapCardSelector
-                id={item.id}
-                name={item.name}
-                initialRegion={initialRegion}
-                polyCoords={polygonCoordinates}
-                onPress={() => router.push(`/(drawer)/${item.id}`)}
+              <FlashList
+                data={farm.fields}
+                renderItem={({ item }) => {
+                  const position = item.position as [number, number];
+                  const coordinates = item.location as [number, number][];
+                  const initialRegion = {
+                    latitude: position[0],
+                    longitude: position[1],
+                    latitudeDelta: 0.005,
+                    longitudeDelta: 0.005,
+                  };
+
+                  const polygonCoordinates = coordinates.map((coordinate) => {
+                    return { latitude: coordinate[0], longitude: coordinate[1] };
+                  });
+                  return (
+                    <MapCardSelector
+                      id={item.id}
+                      name={item.name}
+                      initialRegion={initialRegion}
+                      polyCoords={polygonCoordinates}
+                      onPress={() => router.push(`/(drawer)/${item.id}`)}
+                    />
+                  );
+                }}
+                extraData={fieldsQuery.isPending || fieldsQuery.isLoading}
+                estimatedItemSize={15}
               />
-            );
-          }}
-          extraData={isPending || isLoading}
+
+              {/* {farm.fields?.map(field => {
+                const position = field.position as [number, number];
+                const coordinates = field.location as [number, number][];
+                const initialRegion = {
+                  latitude: position[0],
+                  longitude: position[1],
+                  latitudeDelta: 0.005,
+                  longitudeDelta: 0.005,
+                };
+
+                const polygonCoordinates = coordinates.map(coordinate => ({
+                  latitude: coordinate[0],
+                  longitude: coordinate[1],
+                }));
+
+                return (
+                  <MapCardSelector
+                    key={field.id}
+                    id={field.id}
+                    name={field.name}
+                    initialRegion={initialRegion}
+                    polyCoords={polygonCoordinates}
+                    onPress={() => router.push(`/(drawer)/${field.id}`)}
+                  />
+                );
+              })} */}
+            </>
+          )}
+          extraData={fieldsQuery.isPending || fieldsQuery.isLoading}
           estimatedItemSize={15}
         />
       </Container>

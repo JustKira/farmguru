@@ -1,4 +1,5 @@
-import React from 'react';
+import React, { useEffect } from 'react';
+import { PermissionsAndroid } from 'react-native';
 import MapView, { Details, PROVIDER_GOOGLE, Polygon, Region } from 'react-native-maps';
 import { Field } from '~/lib/db/schemas';
 import { useSharedFieldData } from '~/lib/providers/field-shared-data-provider';
@@ -33,6 +34,9 @@ export function SharedMap({ children }: { children: React.ReactNode }) {
       provider={PROVIDER_GOOGLE}
       mapType="satellite"
       region={shared.region ?? initialRegion}
+      showsUserLocation
+      showsMyLocationButton
+      followsUserLocation
       onRegionChangeComplete={onRegionChange}>
       {children}
       <Polygon coordinates={polygonCoordinates} strokeWidth={4} strokeColor="rgb(64 165 120)" />

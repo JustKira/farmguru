@@ -1,13 +1,13 @@
 import { useQuery } from '@tanstack/react-query';
 import React, { createContext, useState } from 'react';
+import { Region } from 'react-native-maps';
+import { YStack } from 'tamagui';
 
 import db from '../db';
 import { Field, FieldDetail, FieldsMapInfo, FieldsScoutPoints } from '../db/schemas';
 
-import { Text } from '~/tamagui.config';
 import { Container } from '~/components/Container';
-import { YStack } from 'tamagui';
-import { Region } from 'react-native-maps';
+import { Text } from '~/tamagui.config';
 
 export interface ContextType {
   field?: Field;

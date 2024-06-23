@@ -69,7 +69,7 @@ interface ScoutPoint {
   Notes?: string;
   Status: string;
   Photos?: string[];
-  VoiceNotes?: string;
+  VoiceNote?: string;
 }
 
 async function synchronizeScoutPointInsertUpdate(
@@ -122,7 +122,7 @@ async function synchronizeScoutPointInsertUpdate(
       Location: dataToSync.location,
       Notes: dataToSync.notes ?? '',
       Photos: dataToSync.photosKeys ?? [''],
-      VoiceNotes: dataToSync.voiceNoteKey ?? '',
+      VoiceNote: dataToSync.voiceNoteKey ?? '',
     };
 
     if (!isNew) {

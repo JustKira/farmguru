@@ -1,9 +1,11 @@
-import { UserData } from '~/types/global.types';
-import { synchronizeScoutPointInsertUpdate } from '../synchronize-field-scout-points';
-import db from '~/lib/db';
-import { FieldsScoutPoints } from '~/lib/db/schemas';
 import { useMutation, useQueryClient } from '@tanstack/react-query';
 import { useEffect, useState } from 'react';
+
+import { synchronizeScoutPointInsertUpdate } from '../synchronize-field-scout-points';
+
+import db from '~/lib/db';
+import { FieldsScoutPoints } from '~/lib/db/schemas';
+import { UserData } from '~/types/global.types';
 
 const synchronizeScoutPoints = async (user: UserData, isConnected: boolean) => {
   if (!isConnected) {
