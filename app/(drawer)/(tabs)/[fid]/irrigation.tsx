@@ -1,5 +1,6 @@
 import { MaterialIcons } from '@expo/vector-icons';
 import { useRef } from 'react';
+import { useTranslation } from 'react-i18next';
 import { Overlay } from 'react-native-maps';
 import { Button, XStack, YStack, ZStack, useTheme } from 'tamagui';
 
@@ -25,6 +26,8 @@ export default function Irrigation() {
 
   const irrigationFormRef = useRef<IrrigationFormHandle>(null);
 
+  const { t } = useTranslation();
+
   return (
     <>
       <ZStack fullscreen>
@@ -40,40 +43,40 @@ export default function Irrigation() {
         <ConfiguredSheet screen="IRRIGATION">
           <YStack>
             <YStack flex={1} gap="$6">
-              <Text size="$8">Water Status</Text>
-              <XStack flex={1} justifyContent="space-between">
+              <Text size="$8">{t('water_field_status')}</Text>
+              <XStack flex={1} justifyContent="space-between" alignItems="flex-start">
                 <InfoCard
-                  label="Soil Moisture Root Zone"
+                  label={t('dash.irr.soil_moisture_root_zone')}
                   icon={<MaterialIcons name="water-drop" size={32} color={theme.primary.get()} />}
                   value={`${details.soilMoisture}%`}
                 />
                 <InfoCard
-                  label="Days To Wilting"
+                  label={t('days_to_wilting')}
                   icon={<MaterialIcons name="water-drop" size={32} color={theme.primary.get()} />}
-                  value={`${details.daysToWilting} Days`}
+                  value={`${details.daysToWilting} ${t('global.days')}`}
                 />
               </XStack>
             </YStack>
             <YStack flex={1} gap="$6">
-              <XStack justifyContent="space-between">
-                <Text size="$8">Irrigation</Text>
+              <XStack justifyContent="space-between" alignItems="flex-start">
+                <Text size="$8">{t('nav.irrigation')}</Text>
                 <Button
                   onPress={() => {
                     irrigationFormRef.current?.openIrrigationForm();
                   }}>
-                  Add Irrigation
+                  {`${t('actions.add')}${t('nav.irrigation')}`}
                 </Button>
               </XStack>
-              <XStack flex={1} justifyContent="space-between">
+              <XStack flex={1} justifyContent="space-between" alignItems="flex-start">
                 <InfoCard
-                  label="Next Irrigation"
+                  label={t('next_irrigation')}
                   icon={<MaterialIcons name="water-drop" size={32} color={theme.primary.get()} />}
-                  value={`${details.nextIrrigation} Days`}
+                  value={`${details.nextIrrigation} ${t('global.days')}`}
                 />
                 <InfoCard
-                  label="Advised Water"
+                  label={t('advised_irrigation_duration')}
                   icon={<MaterialIcons name="water-drop" size={32} color={theme.primary.get()} />}
-                  value={`${details.advisedWater} Hours`}
+                  value={`${details.advisedWater} ${t('global.hours')}`}
                 />
               </XStack>
             </YStack>

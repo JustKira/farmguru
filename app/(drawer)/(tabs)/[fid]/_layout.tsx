@@ -1,5 +1,6 @@
 import { FontAwesome, FontAwesome5, Ionicons, MaterialCommunityIcons } from '@expo/vector-icons';
 import { Tabs, useGlobalSearchParams, useNavigation, useRouter } from 'expo-router';
+import { useTranslation } from 'react-i18next';
 import { useTheme } from 'tamagui';
 import useMobileBackHandler from '~/lib/hooks/useMobileBackHandler';
 
@@ -13,7 +14,7 @@ export default function TabLayout() {
     () => true,
     () => router.navigate('(drawer)')
   );
-
+  const { t } = useTranslation();
   const theme = useTheme();
   return (
     <FieldSharedDataProvider fid={fid as string}>
@@ -39,21 +40,21 @@ export default function TabLayout() {
         <Tabs.Screen
           name="index"
           options={{
-            title: 'Info',
+            title: t('nav.general'),
             tabBarIcon: ({ color }) => <Ionicons name="analytics-sharp" size={30} color={color} />,
           }}
         />
         <Tabs.Screen
           name="crop"
           options={{
-            title: 'Crop',
+            title: t('nav.crop'),
             tabBarIcon: ({ color }) => <FontAwesome5 name="seedling" size={30} color={color} />,
           }}
         />
         <Tabs.Screen
           name="irrigation"
           options={{
-            title: 'Irrigation',
+            title: t('nav.irrigation'),
             tabBarIcon: ({ color }) => (
               <MaterialCommunityIcons name="water" size={30} color={color} />
             ),
@@ -62,7 +63,7 @@ export default function TabLayout() {
         <Tabs.Screen
           name="scout"
           options={{
-            title: 'Scout',
+            title: t('nav.scout'),
             tabBarIcon: ({ color }) => <FontAwesome name="search" size={30} color={color} />,
           }}
         />

@@ -4,6 +4,8 @@ import { Button, Sheet, YStack } from 'tamagui';
 import useMobileBackHandler from '~/lib/hooks/useMobileBackHandler';
 import { Field } from '~/lib/db/schemas';
 import { useSharedFieldData } from '~/lib/providers/field-shared-data-provider';
+import useGetCurrentLocation from '~/lib/hooks/useHookGetCurrentLocation';
+import { useTranslation } from 'react-i18next';
 
 export type MapSheetHandle = {
   openMapSheet: () => void;
@@ -21,7 +23,11 @@ const MapSheet = forwardRef<MapSheetHandle, MapSheetProps>(
   ({ children, singular, interactiveMarker = false, onMarkerAdded }, ref) => {
     const [open, setOpen] = useState(false);
 
-    const [markers, setMarkers] = useState<{ latitude: number; longitude: number }[]>([]);
+    const { location } = useGetCurrentLocation();
+
+    const [markers, setMarkers] = useState<{ latitude: number; longitude: number }[]>(
+      location ? [{ latitude: location.coords.latitude, longitude: location.coords.longitude }] : []
+    );
 
     const shared = useSharedFieldData();
     const field = shared.field as Field;
@@ -37,6 +43,8 @@ const MapSheet = forwardRef<MapSheetHandle, MapSheetProps>(
     const polygonCoordinates = coordinates.map((coordinate) => {
       return { latitude: coordinate[0], longitude: coordinate[1] };
     });
+
+    const { t } = useTranslation();
 
     useMobileBackHandler(
       () => {
@@ -88,9 +96,14 @@ const MapSheet = forwardRef<MapSheetHandle, MapSheetProps>(
               mapType="satellite"
               region={shared.region ?? initialRegion}
               onPress={handleMapPress}>
-              {markers.map((marker, index) => (
-                <Marker key={index} coordinate={marker} />
-              ))}
+              {open ? (
+                <>
+                  {markers.map((marker, index) => (
+                    <Marker key={index} coordinate={marker} />
+                  ))}
+                </>
+              ) : null}
+
               <Polygon
                 coordinates={polygonCoordinates}
                 strokeWidth={4}
@@ -102,7 +115,13 @@ const MapSheet = forwardRef<MapSheetHandle, MapSheetProps>(
               onPress={() => {
                 setOpen(false);
               }}>
-              Close
+              {t('save')}
+            </Button>
+            <Button
+              onPress={() => {
+                setOpen(false);
+              }}>
+              {t('cancel')}
             </Button>
           </YStack>
         </Sheet.Frame>

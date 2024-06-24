@@ -1,6 +1,7 @@
 import { FontAwesome } from '@expo/vector-icons';
 import DateTimePicker, { DateTimePickerEvent } from '@react-native-community/datetimepicker';
 import React from 'react';
+import { useTranslation } from 'react-i18next';
 import { Button } from 'tamagui';
 
 interface DateTimeSelectorProps {
@@ -15,13 +16,14 @@ export const DateTimeSelector: React.FC<DateTimeSelectorProps> = ({
   onTimeChange,
   selectedDate,
 }) => {
+  const { t } = useTranslation();
   const [show, setShow] = React.useState(false);
   return (
     <>
       <Button
         onPress={() => setShow(true)}
         icon={<FontAwesome name={mode === 'date' ? 'calendar' : 'clock-o'} size={20} />}>
-        {mode === 'date' ? 'Select Date' : 'Select Time'}
+        {mode === 'date' ? t('select_date') : t('select_time')}
       </Button>
       {show && (
         <DateTimePicker

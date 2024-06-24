@@ -1,13 +1,16 @@
 import { MaterialCommunityIcons } from '@expo/vector-icons';
 import { format } from 'date-fns';
 import React from 'react';
+import { useTranslation } from 'react-i18next';
 import { TouchableOpacity } from 'react-native';
 import { XStack, useTheme } from 'tamagui';
 
 import { FieldsScoutPoints } from '~/lib/db/schemas';
+import { useLanguage } from '~/lib/providers/language-provider';
 import { Text } from '~/tamagui.config';
 import { Severity } from '~/types/global.types';
 import getSeverity from '~/utils/get-severity';
+import { localizedDateFormate } from '~/utils/localizedDateFormate';
 
 export default function ScoutPointListItem({
   point,
@@ -17,6 +20,10 @@ export default function ScoutPointListItem({
   onPress?: () => void;
 }) {
   const theme = useTheme();
+
+  const { t } = useTranslation();
+
+  const { currentLanguage } = useLanguage();
 
   return (
     <TouchableOpacity onPress={onPress}>
@@ -39,9 +46,12 @@ export default function ScoutPointListItem({
                 : theme.yellow10.get()
             }
           />
-          <Text size="$4">{format(point.date, 'EE ,d MMM yyy HH:mm aaa')}</Text>
+          <Text size="$4">
+            {localizedDateFormate(point.date, 'EE ,d MMM yyy HH:mm aaa', currentLanguage)}
+          </Text>
         </XStack>
-        <Text size="$4">{point.category}</Text>
+        {/* @ts-ignore */}
+        <Text size="$4">{t(point.category.toLocaleLowerCase())}</Text>
       </XStack>
     </TouchableOpacity>
   );

@@ -3,6 +3,7 @@ import { useToastController } from '@tamagui/toast';
 import { format } from 'date-fns';
 import React, { forwardRef, useImperativeHandle, useState, useMemo } from 'react';
 import { useForm } from 'react-hook-form';
+import { useTranslation } from 'react-i18next';
 import { Button, Input, ScrollView, Sheet, TextArea, YStack } from 'tamagui';
 import { z } from 'zod';
 
@@ -10,9 +11,11 @@ import { DateTimeSelector } from '~/components/form/DateTimePicker';
 import db from '~/lib/db';
 import { FieldIrrigation, NewFieldIrrigation, fieldIrrigationSchema } from '~/lib/db/schemas';
 import { useAuth } from '~/lib/providers/auth-provider';
+import { useLanguage } from '~/lib/providers/language-provider';
 import { useNetInfo } from '~/lib/providers/netinfo-provider';
 import { synchronizeIrrigationInsert } from '~/lib/sync/synchronize-irrigation';
 import { Text } from '~/tamagui.config';
+import { localizedDateFormate } from '~/utils/localizedDateFormate';
 
 const formSchema = z.object({
   duration: z.number().min(1, 'Duration should be at least 1 minute'),
@@ -38,6 +41,10 @@ const AddIrrigationForm = forwardRef<IrrigationFormHandle, { fid: string }>(({ f
       createdOn: new Date().toISOString(),
     },
   });
+
+  const { currentLanguage } = useLanguage();
+
+  const { t } = useTranslation();
 
   useImperativeHandle(ref, () => ({
     openIrrigationForm: () => {
@@ -143,9 +150,11 @@ const AddIrrigationForm = forwardRef<IrrigationFormHandle, { fid: string }>(({ f
       <Sheet.Frame>
         <ScrollView>
           <YStack padding="$4" gap="$4">
-            <Text size="$6">Add Irrigation</Text>
+            <Text size="$6"> {`${t('actions.add')}${t('nav.irrigation')}`}</Text>
             <YStack gap="$2">
-              <Text size="$2">Duration (Hours)</Text>
+              <Text size="$2">
+                {t('duration')} ({t('global.hours')})
+              </Text>
               <Input
                 size="$4"
                 borderWidth={1}
@@ -155,7 +164,7 @@ const AddIrrigationForm = forwardRef<IrrigationFormHandle, { fid: string }>(({ f
               />
             </YStack>
             <YStack>
-              <Text size="$2">Date</Text>
+              <Text size="$2">{t('date')}</Text>
               <DateTimeSelector
                 mode="date"
                 onTimeChange={(e, d) => {
@@ -169,12 +178,16 @@ const AddIrrigationForm = forwardRef<IrrigationFormHandle, { fid: string }>(({ f
               />
               <Text size="$4" color="$foregroundMuted">
                 {form.watch('createdOn')
-                  ? format(new Date(form.watch('createdOn')), 'EE ,d MMM yyy')
+                  ? localizedDateFormate(
+                      new Date(form.watch('createdOn')),
+                      'EE ,d MMM yyy',
+                      currentLanguage
+                    )
                   : ''}
               </Text>
             </YStack>
             <YStack>
-              <Text size="$2">Time</Text>
+              <Text size="$2">{t('time')}</Text>
               <DateTimeSelector
                 mode="time"
                 onTimeChange={(e, d) => {
@@ -188,7 +201,11 @@ const AddIrrigationForm = forwardRef<IrrigationFormHandle, { fid: string }>(({ f
               />
               <Text size="$4" color="$foregroundMuted">
                 {form.watch('createdOn')
-                  ? format(new Date(form.watch('createdOn')), 'HH:mm aaa')
+                  ? localizedDateFormate(
+                      new Date(form.watch('createdOn')),
+                      'HH:mm aaa',
+                      currentLanguage
+                    )
                   : ''}
               </Text>
             </YStack>
@@ -211,9 +228,9 @@ const AddIrrigationForm = forwardRef<IrrigationFormHandle, { fid: string }>(({ f
 
                 startCooldown();
               }}>
-              {cooldown ? `Save (${countdown})` : 'Save'}
+              {cooldown ? `${t('save')} (${countdown})` : t('save')}
             </Button>
-            <Button onPress={() => setOpen(false)}>Cancel</Button>
+            <Button onPress={() => setOpen(false)}>{t('cancel')}</Button>
           </YStack>
         </ScrollView>
       </Sheet.Frame>

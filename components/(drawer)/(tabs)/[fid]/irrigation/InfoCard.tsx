@@ -13,8 +13,8 @@ export default function InfoCard({ icon, label, value }: InfoCardProps) {
   const theme = useTheme();
 
   return (
-    <YStack aspectRatio={1} width={'48%'}>
-      <YStack gap="$2">
+    <YStack aspectRatio={1} width={'48%'} alignItems="flex-start">
+      <YStack gap="$2" alignItems="flex-start">
         {icon}
         <Text size="$3">{label}</Text>
       </YStack>

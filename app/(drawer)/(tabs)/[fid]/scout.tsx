@@ -1,5 +1,6 @@
 import { FlashList } from '@shopify/flash-list';
 import { useEffect, useRef, useState } from 'react';
+import { useTranslation } from 'react-i18next';
 import { BackHandler } from 'react-native';
 import { Marker, Overlay } from 'react-native-maps';
 import { Button, YStack, ZStack } from 'tamagui';
@@ -26,6 +27,8 @@ export default function Scout() {
   const scoutPoints = shared.scoutPoints as FieldsScoutPoints[];
   const scoutPointDetailsRef = useRef<ScoutPointDetailsHandle>(null);
   const scoutInsertFormRef = useRef<ScoutInsertFormHandle>(null);
+
+  const { t } = useTranslation();
 
   useEffect(() => {
     const backAction = () => {
@@ -78,7 +81,7 @@ export default function Scout() {
             onPress={() => {
               scoutInsertFormRef.current?.openScoutPointForm();
             }}>
-            Add Scout Point
+            {t('dash.scout.add_marker')}
           </Button>
           <FlashList
             data={scoutPoints}

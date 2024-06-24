@@ -1,3 +1,4 @@
+import { useTranslation } from 'react-i18next';
 import MapView, { PROVIDER_GOOGLE, Polygon } from 'react-native-maps';
 import { YStack } from 'tamagui';
 import { useSynchronizer } from '~/lib/providers/synchronizer-provider';
@@ -27,7 +28,7 @@ const MapCardSelector: React.FC<MapCardSelectorProps> = ({
   onPress,
 }) => {
   const { syncStateDetailed } = useSynchronizer();
-
+  const { t } = useTranslation();
   return (
     <YStack
       flex={1}
@@ -67,15 +68,15 @@ const MapCardSelector: React.FC<MapCardSelectorProps> = ({
         }
         onPress={onPress}>
         {syncStateDetailed[id] === 'SYNCING_SCOUT_POINTS'
-          ? 'Syncing. Scout Points'
+          ? t('home.syncing_scout_points')
           : syncStateDetailed[id] === 'FETCHING_DETAILS'
-            ? 'Loading. Details'
+            ? t('home.loading_details')
             : syncStateDetailed[id] === 'FETCHING_MAP_DETAILS'
-              ? 'Loading. Map Details'
+              ? t('home.loading_map_details')
               : syncStateDetailed[id] === 'FETCHING_SCOUT_POINTS'
-                ? 'Loading. Scout Points'
+                ? t('home.loading_scout_points')
                 : syncStateDetailed[id] === 'NO_ANALYTICS'
-                  ? 'Analytics not available'
+                  ? t('home.analytics_not_available')
                   : name}
       </Button>
       <MapView

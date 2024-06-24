@@ -1,4 +1,5 @@
 import { useState } from 'react';
+import { useTranslation } from 'react-i18next';
 import { Overlay } from 'react-native-maps';
 import { Button, XStack, YStack, ZStack } from 'tamagui';
 
@@ -23,6 +24,8 @@ export default function Crop() {
   const field = shared.field as Field;
   const map = shared.map as FieldsMapInfo;
   const details = shared.details as FieldDetail;
+
+  const { t } = useTranslation();
 
   const [selected, setSelected] = useState<MapTypes>('nitrogen');
   return (
@@ -54,18 +57,25 @@ export default function Crop() {
             onPress={() => setSelected(m.value as MapTypes)}
             color={m.value === selected ? 'black' : 'white'}
             backgroundColor={m.value === selected ? '$primary' : '$muted'}>
-            {m.label}
+            {/* @ts-ignore */}
+            {t(`${m.label.toLowerCase()}`)}
           </Button>
         ))}
       </XStack>
       <ConfiguredSheet screen="CROP">
         <YStack rowGap="$2">
           <FieldPercentages
-            label="Nutrients"
+            label={t('nutrients')}
             percentages={details?.nutrientsPercentage ?? undefined}
           />
-          <FieldPercentages label="Growth" percentages={details?.growthPercentage ?? undefined} />
-          <FieldPercentages label="Stress" percentages={details?.stressPercentage ?? undefined} />
+          <FieldPercentages
+            label={t('growth')}
+            percentages={details?.growthPercentage ?? undefined}
+          />
+          <FieldPercentages
+            label={t('stress')}
+            percentages={details?.stressPercentage ?? undefined}
+          />
         </YStack>
       </ConfiguredSheet>
     </ZStack>

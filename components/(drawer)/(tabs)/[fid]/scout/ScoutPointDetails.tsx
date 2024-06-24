@@ -20,6 +20,9 @@ import { Severity } from '~/types/global.types';
 import { useCategories } from '~/utils/categories';
 import getSeverity from '~/utils/get-severity';
 import useMobileBackHandler from '~/lib/hooks/useMobileBackHandler';
+import { useTranslation } from 'react-i18next';
+import { localizedDateFormate } from '~/utils/localizedDateFormate';
+import { useLanguage } from '~/lib/providers/language-provider';
 
 export type ScoutPointDetailsHandle = {
   openScoutPointDetails: (point: FieldsScoutPoints) => void;
@@ -40,12 +43,16 @@ const ScoutPointDetails = forwardRef<ScoutPointDetailsHandle>((props, ref) => {
     const imageUri = selectedPoint?.photosFiles?.[0] ?? '';
     previewImageSheetRef.current?.openPreviewImageSheet(imageUri);
   };
+
+  const { currentLanguage } = useLanguage();
   const mapSheetRef = useRef<MapSheetHandle>(null);
   const voiceNotePlayer = useAudioPlayer(selectedPoint?.voiceNoteFile ?? undefined);
   const voiceReplyPlayer = useAudioPlayer(selectedPoint?.voiceReplyFile ?? undefined);
   const handleOpenMap = () => {
     mapSheetRef.current?.openMapSheet();
   };
+
+  const { t } = useTranslation();
 
   const severityColor = useMemo(() => {
     return selectedPoint?.severity.toLocaleLowerCase()
@@ -127,46 +134,51 @@ const ScoutPointDetails = forwardRef<ScoutPointDetailsHandle>((props, ref) => {
                   }
                 }}>
                 <Text size="$6" color="$primary">
-                  Edit
+                  {t('actions.edit')}
                 </Text>
               </TouchableOpacity>
               <YStack gap="$4">
                 <YStack gap="$2">
                   <Text size="$4" color="$foregroundMuted">
-                    Category
+                    {t('category')}
                   </Text>
                   <XStack alignItems="center" gap="$4">
                     {selectedCategory?.icon()}
-                    <Text size="$8">{selectedCategory?.value}</Text>
+                    {/* 
+                    @ts-ignore */}
+                    <Text size="$8">{t(selectedCategory?.value)}</Text>
                   </XStack>
                 </YStack>
                 <YStack gap="$2">
                   <Text size="$4" color="$foregroundMuted">
-                    Severity
+                    {t('severity')}
                   </Text>
                   <XStack alignItems="center" gap="$4">
                     <Text size="$8" color={severityColor}>
                       {selectedPoint?.severity
-                        ? capitalizeFirstLetter(selectedPoint.severity.toLocaleLowerCase())
-                        : 'Unknown'}
+                        ? //@ts-ignore
+                          capitalizeFirstLetter(t(selectedPoint.severity.toLocaleLowerCase()))
+                        : t('unknown')}
                     </Text>
                   </XStack>
                 </YStack>
 
                 <YStack gap="$2">
                   <Text size="$4" color="$foregroundMuted">
-                    Notes
+                    {t('notes')}
                   </Text>
                   <XStack alignItems="center" gap="$4">
                     <Paragraph>
-                      {selectedPoint?.notes ? selectedPoint.notes : 'No notes available'}
+                      {selectedPoint?.notes
+                        ? selectedPoint.notes
+                        : t('no_available', { name: t('notes') })}
                     </Paragraph>
                   </XStack>
                 </YStack>
 
                 <YStack>
                   <Text size="$4" color="$foregroundMuted">
-                    Voice
+                    {t('voice_note')}
                   </Text>
 
                   {selectedPoint?.voiceNoteFile ? (
@@ -180,21 +192,21 @@ const ScoutPointDetails = forwardRef<ScoutPointDetailsHandle>((props, ref) => {
                           size={20}
                         />
                       }>
-                      {voiceNotePlayer.isPlaying ? 'Stop' : 'Play'}
+                      {voiceNotePlayer.isPlaying ? t('stop') : t('play')}
                     </Button>
                   ) : (
-                    <Text size="$4">no voice note found.</Text>
+                    <Text size="$4"> {t('no_available', { name: t('voice_note') })}</Text>
                   )}
                 </YStack>
 
                 <YStack>
                   <Text size="$4" color="$foregroundMuted">
-                    Image
+                    {t('image')}
                   </Text>
                   {selectedPoint?.photosFiles?.[0] ? (
-                    <Button onPress={handleOpenPreview}>Open Image Preview</Button>
+                    <Button onPress={handleOpenPreview}>{t('open_image')}</Button>
                   ) : (
-                    <Text size="$4">No image found</Text>
+                    <Text size="$4">{t('no_available', { name: t('image') })}</Text>
                   )}
 
                   <PreviewImageSheet ref={previewImageSheetRef} />
@@ -202,18 +214,22 @@ const ScoutPointDetails = forwardRef<ScoutPointDetailsHandle>((props, ref) => {
 
                 <YStack>
                   <Text size="$4" color="$foregroundMuted">
-                    Date
+                    {t('date')}
                   </Text>
                   <Text size="$4">
                     {selectedPoint?.date.toLocaleString()
-                      ? format(selectedPoint.date, 'EE ,d MMM yyy HH:mm aaa')
-                      : 'Unknown'}
+                      ? localizedDateFormate(
+                          selectedPoint.date,
+                          'EE ,d MMM yyy HH:mm aaa',
+                          currentLanguage
+                        )
+                      : t('unknown')}
                   </Text>
                 </YStack>
 
                 <YStack>
                   <Text size="$4" color="$foregroundMuted">
-                    Location
+                    {t('location')}
                   </Text>
                   <YStack gap="$2">
                     <XStack gap="$4">
@@ -224,17 +240,20 @@ const ScoutPointDetails = forwardRef<ScoutPointDetailsHandle>((props, ref) => {
                       onPress={() => {
                         handleOpenMap();
                       }}>
-                      View on Map
+                      {t('open_map')}
                     </Button>
                   </YStack>
                 </YStack>
 
                 <YStack gap="$4">
-                  <Text size="$6" color="$foregroundMuted">
-                    Experts
-                  </Text>
+                  {/* <Text size="$6" color="$foregroundMuted">
+                    {t("expert_response")}
+                  </Text> */}
                   <YStack>
-                    <Text size="$4">Voice Reply</Text>
+                    <Text size="$4" color="$foregroundMuted">
+                      {' '}
+                      {t('expert_voice_response')}
+                    </Text>
 
                     {selectedPoint?.voiceReplyFile ? (
                       <Button
@@ -247,20 +266,24 @@ const ScoutPointDetails = forwardRef<ScoutPointDetailsHandle>((props, ref) => {
                             size={20}
                           />
                         }>
-                        {voiceReplyPlayer.isPlaying ? 'Stop' : 'Play'}
+                        {voiceReplyPlayer.isPlaying ? t('stop') : t('play')}
                       </Button>
                     ) : (
-                      <Text size="$4">no voice reply found.</Text>
+                      <Text size="$4">
+                        {t('no_available', { name: t('expert_voice_response') })}
+                      </Text>
                     )}
                   </YStack>
 
                   <YStack gap="$2">
                     <Text size="$4" color="$foregroundMuted">
-                      Reply
+                      {t('expert_response')}
                     </Text>
                     <XStack alignItems="center" gap="$4">
                       <Paragraph>
-                        {selectedPoint?.reply ? selectedPoint.reply : 'No reply available'}
+                        {selectedPoint?.reply
+                          ? selectedPoint.reply
+                          : t('no_available', { name: t('expert_response') })}
                       </Paragraph>
                     </XStack>
                   </YStack>

@@ -4,18 +4,20 @@ import { useMigrations } from 'drizzle-orm/expo-sqlite/migrator';
 import { useFonts } from 'expo-font';
 import { Stack, SplashScreen } from 'expo-router';
 import React, { useEffect } from 'react';
-import { useColorScheme } from 'react-native';
+import { View, useColorScheme } from 'react-native';
 import { GestureHandlerRootView } from 'react-native-gesture-handler';
 import { PortalProvider, TamaguiProvider, Theme, YStack } from 'tamagui';
 
 import migrations from '../drizzle/migrations';
 import config, { Text } from '../tamagui.config';
+import { getLocales, getCalendars } from 'expo-localization';
 
 import db from '~/lib/db';
 import { AuthProvider } from '~/lib/providers/auth-provider';
 import { NetInfoProvider } from '~/lib/providers/netinfo-provider';
 import { CustomToast } from '~/components/Toast';
 import { SafeToastViewport } from '~/components/ToastSafeView';
+import { LanguageProvider } from '~/lib/providers/language-provider';
 
 SplashScreen.preventAutoHideAsync();
 
@@ -59,21 +61,23 @@ const Wrapper = ({ children }: { children: React.ReactNode }) => {
     <GestureHandlerRootView style={{ flex: 1 }}>
       <ThemeProvider>
         <PortalProvider shouldAddRootHost>
-          <MigratorWrapper>
-            <QueryClientProvider client={queryClient}>
-              <NetInfoProvider>
-                <AuthProvider>
-                  <Theme name={color}>
-                    <ToastProvider>
-                      {children}
-                      <SafeToastViewport />
-                      <CustomToast />
-                    </ToastProvider>
-                  </Theme>
-                </AuthProvider>
-              </NetInfoProvider>
-            </QueryClientProvider>
-          </MigratorWrapper>
+          <LanguageProvider>
+            <MigratorWrapper>
+              <QueryClientProvider client={queryClient}>
+                <NetInfoProvider>
+                  <AuthProvider>
+                    <Theme name={color}>
+                      <ToastProvider>
+                        {children}
+                        <SafeToastViewport />
+                        <CustomToast />
+                      </ToastProvider>
+                    </Theme>
+                  </AuthProvider>
+                </NetInfoProvider>
+              </QueryClientProvider>
+            </MigratorWrapper>
+          </LanguageProvider>
         </PortalProvider>
       </ThemeProvider>
     </GestureHandlerRootView>

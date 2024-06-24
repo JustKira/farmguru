@@ -1,6 +1,7 @@
 import { Feather } from '@expo/vector-icons';
 import React from 'react';
 import { Stack, YStack, useTheme } from 'tamagui';
+import { useLanguage } from '~/lib/providers/language-provider';
 
 import { Text } from '~/tamagui.config';
 
@@ -13,10 +14,10 @@ interface TrendBlockProps {
 export default function TrendBlock({ isNegativeNature, label, value }: TrendBlockProps) {
   const theme = useTheme();
   const isTrendingPositive = isNegativeNature ? value <= 0 : value >= 0;
-
+  const { currentLanguage } = useLanguage();
   return (
-    <YStack>
-      <YStack>
+    <YStack alignItems={'flex-start'}>
+      <YStack alignItems={'flex-start'}>
         <Feather
           name={isTrendingPositive ? 'trending-up' : 'trending-down'}
           size={32}

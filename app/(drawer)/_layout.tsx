@@ -1,6 +1,7 @@
 import { Ionicons, MaterialIcons } from '@expo/vector-icons';
 import { Stack } from 'expo-router';
 import { Drawer } from 'expo-router/drawer';
+import { useTranslation } from 'react-i18next';
 import { useTheme } from 'tamagui';
 
 import { SynchronizerProvider } from '~/lib/providers/synchronizer-provider';
@@ -8,6 +9,7 @@ import { SynchronizerProvider } from '~/lib/providers/synchronizer-provider';
 const DrawerLayout = () => {
   const theme = useTheme();
 
+  const { t } = useTranslation();
   return (
     <>
       <Stack.Screen options={{ headerShown: false }} />
@@ -33,8 +35,8 @@ const DrawerLayout = () => {
           <Drawer.Screen
             name="index"
             options={{
-              headerTitle: 'Home',
-              drawerLabel: 'Home',
+              headerTitle: t('navigation.home'),
+              drawerLabel: t('navigation.home'),
               drawerIcon: ({ size, color }) => (
                 <Ionicons name="home-outline" size={size} color={color} />
               ),
@@ -43,8 +45,8 @@ const DrawerLayout = () => {
           <Drawer.Screen
             name="profile"
             options={{
-              headerTitle: 'Profile',
-              drawerLabel: 'Profile',
+              headerTitle: t('navigation.profile'),
+              drawerLabel: t('navigation.profile'),
               drawerIcon: ({ size, color }) => (
                 <MaterialIcons name="verified-user" size={size} color={color} />
               ),
@@ -53,7 +55,7 @@ const DrawerLayout = () => {
           <Drawer.Screen
             name="(tabs)/[fid]"
             options={{
-              headerTitle: 'Field',
+              headerTitle: t('navigation.field'),
               drawerItemStyle: { display: 'none' },
             }}
           />

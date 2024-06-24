@@ -7,6 +7,7 @@ import { format } from 'date-fns';
 import { eq } from 'drizzle-orm';
 import React, { forwardRef, useImperativeHandle, useState, useMemo, useRef } from 'react';
 import { useForm } from 'react-hook-form';
+import { useTranslation } from 'react-i18next';
 import { Button, ScrollView, Sheet, TextArea, XStack, YStack } from 'tamagui';
 import { z } from 'zod';
 
@@ -19,9 +20,11 @@ import db from '~/lib/db';
 import { FieldsScoutPoints, NewFieldsScoutPoints, fieldsScoutPointsSchema } from '~/lib/db/schemas';
 import useMobileBackHandler from '~/lib/hooks/useMobileBackHandler';
 import { useAuth } from '~/lib/providers/auth-provider';
+import { useLanguage } from '~/lib/providers/language-provider';
 import { useNetInfo } from '~/lib/providers/netinfo-provider';
 import { synchronizeScoutPointInsertUpdate } from '~/lib/sync/synchronize-field-scout-points';
 import { Text } from '~/tamagui.config';
+import { localizedDateFormate } from '~/utils/localizedDateFormate';
 const formSchema = z.object({
   category: z.string(),
   severity: z.string(),
@@ -58,7 +61,7 @@ const categoryItems = [
     icon: (color: string) => <Entypo name="dots-three-horizontal" size={20} color={color} />,
   },
   {
-    text: 'Dont Know',
+    text: 'DontKnow',
     value: 'dontknow',
     icon: (color: string) => <FontAwesome5 name="question" size={20} color={color} />,
   },
@@ -96,6 +99,25 @@ const ScoutInsertForm = forwardRef<ScoutInsertFormHandle, { fid: string }>(({ fi
     },
   });
 
+  const { t } = useTranslation();
+
+  const categoryItemsLocalized = useMemo(() => {
+    return categoryItems.map((item) => ({
+      ...item,
+      //@ts-ignore
+      text: t(item.text.toLowerCase()) as string,
+    }));
+  }, [t]);
+
+  const severityItemsLocalized = useMemo(() => {
+    return severityItems.map((item) => ({
+      ...item,
+      //@ts-ignore
+      text: t(item.text.toLowerCase()) as string,
+    }));
+  }, [t]);
+
+  const { currentLanguage } = useLanguage();
   const netinfo = useNetInfo();
   const toast = useToastController();
   const imagePickerSheetRef = useRef<ImagePickerSheetHandle>(null);
@@ -250,20 +272,20 @@ const ScoutInsertForm = forwardRef<ScoutInsertFormHandle, { fid: string }>(({ fi
           <ScrollView>
             <YStack padding="$4" gap="$4">
               <YStack gap="$2">
-                <Text size="$2">Category</Text>
+                <Text size="$2">{t('category')}</Text>
                 <HorizontalButtons
                   value={form.watch('category')}
-                  items={categoryItems}
+                  items={categoryItemsLocalized}
                   onClick={(v) => {
                     form.setValue('category', v);
                   }}
                 />
               </YStack>
               <YStack gap="$2">
-                <Text size="$2">Severity</Text>
+                <Text size="$2">{t('severity')}</Text>
                 <HorizontalButtons
                   value={form.watch('severity')}
-                  items={severityItems}
+                  items={severityItemsLocalized}
                   onClick={(v) => {
                     form.setValue('severity', v);
                   }}
@@ -271,7 +293,7 @@ const ScoutInsertForm = forwardRef<ScoutInsertFormHandle, { fid: string }>(({ fi
                 />
               </YStack>
               <YStack gap="$2">
-                <Text size="$2">Notes</Text>
+                <Text size="$2">{t('notes')}</Text>
                 <TextArea
                   size="$4"
                   borderWidth={1}
@@ -281,7 +303,7 @@ const ScoutInsertForm = forwardRef<ScoutInsertFormHandle, { fid: string }>(({ fi
                 />
               </YStack>
               <YStack>
-                <Text size="$2">Voice Note</Text>
+                <Text size="$2">{t('voice_note')}</Text>
                 <VoiceRecord
                   // value={form.watch('voiceNoteUri')}
                   onRecordingComplete={(uri) => {
@@ -290,13 +312,18 @@ const ScoutInsertForm = forwardRef<ScoutInsertFormHandle, { fid: string }>(({ fi
                 />
               </YStack>
               <YStack gap="$2">
-                <Text size="$2">Add Image</Text>
+                <Text size="$2">
+                  {t('add')}
+                  {t('image')}{' '}
+                </Text>
                 <Button onPress={() => imagePickerSheetRef.current?.openImagePickerSheet()}>
-                  {form.watch('photoUri') ? 'Image Selected' : 'Select Image'}
+                  {form.watch('photoUri')
+                    ? t('selected', { name: t('image') })
+                    : t('select', { name: t('image') })}
                 </Button>
               </YStack>
               <YStack>
-                <Text size="$2">Date</Text>
+                <Text size="$2">{t('date')}</Text>
                 <DateTimeSelector
                   mode="date"
                   onTimeChange={(e, d) => {
@@ -310,12 +337,16 @@ const ScoutInsertForm = forwardRef<ScoutInsertFormHandle, { fid: string }>(({ fi
                 />
                 <Text size="$4" color="$foregroundMuted">
                   {form.watch('createdOn')
-                    ? format(new Date(form.watch('createdOn')), 'EE ,d MMM yyy')
+                    ? localizedDateFormate(
+                        new Date(form.watch('createdOn')),
+                        'EE ,d MMM yyy',
+                        currentLanguage
+                      )
                     : ''}
                 </Text>
               </YStack>
               <YStack>
-                <Text size="$2">Time</Text>
+                <Text size="$2">{t('time')}</Text>
                 <DateTimeSelector
                   mode="time"
                   onTimeChange={(e, d) => {
@@ -329,17 +360,21 @@ const ScoutInsertForm = forwardRef<ScoutInsertFormHandle, { fid: string }>(({ fi
                 />
                 <Text size="$4" color="$foregroundMuted">
                   {form.watch('createdOn')
-                    ? format(new Date(form.watch('createdOn')), 'HH:mm aaa')
+                    ? localizedDateFormate(
+                        new Date(form.watch('createdOn')),
+                        'HH:mm aaa',
+                        currentLanguage
+                      )
                     : ''}
                 </Text>
               </YStack>
               <YStack>
-                <Text size="$2">Location</Text>
+                <Text size="$2">{t('location')}</Text>
                 <Button
                   onPress={() => {
                     mapSheetRef.current?.openMapSheet();
                   }}>
-                  Select Location
+                  {t('select', { name: t('location') })}
                 </Button>
                 <XStack gap="$4">
                   {form.watch('location') ? (
@@ -377,9 +412,9 @@ const ScoutInsertForm = forwardRef<ScoutInsertFormHandle, { fid: string }>(({ fi
 
                   startCooldown();
                 }}>
-                {cooldown ? `Save (${countdown})` : 'Save'}
+                {cooldown ? `${t('save')} (${countdown})` : t('save')}
               </Button>
-              <Button onPress={() => setOpen(false)}>Cancel</Button>
+              <Button onPress={() => setOpen(false)}>{t('cancel')}</Button>
             </YStack>
           </ScrollView>
         </Sheet.Frame>

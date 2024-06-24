@@ -1,8 +1,8 @@
 {
   "expo": {
-    "name": "farmguru",
+    "name": "Farmguru",
     "slug": "farmguru",
-    "version": "1.0.0",
+    "version": "0.0.1b",
     "scheme": "farmguru",
     "web": {
       "bundler": "metro",
@@ -10,6 +10,7 @@
       "favicon": "./assets/favicon.png"
     },
     "plugins": [
+      "expo-localization",
       "expo-router",
       [
         "expo-dev-launcher",
@@ -17,8 +18,14 @@
           "launchModeExperimental": "most-recent"
         }
       ],
-
-      ["expo-build-properties"]
+      [
+        "expo-location",
+        {
+          "locationAlwaysAndWhenInUsePermission": "Allow $(PRODUCT_NAME) to use your location."
+        }
+      ],
+      ["expo-build-properties"],
+      "expo-localization"
     ],
     "experiments": {
       "typedRoutes": true,

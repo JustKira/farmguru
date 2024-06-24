@@ -1,4 +1,5 @@
 import React, { useMemo } from 'react';
+import { useTranslation } from 'react-i18next';
 import { Bar } from 'react-native-progress';
 import { YStack, XStack, Stack, Text, Progress, useTheme } from 'tamagui';
 
@@ -11,6 +12,7 @@ export default function FieldPercentages({
 }) {
   const theme = useTheme();
 
+  const { t } = useTranslation();
   const barConfig = useMemo(() => {
     return {
       color: theme.primary.get(),
@@ -45,7 +47,7 @@ export default function FieldPercentages({
       <YStack space="$3">
         <XStack justifyContent="space-between">
           <Text fontSize="$6" color={theme.foreground.get()}>
-            High
+            {t('high')}
           </Text>
           <Text fontSize="$6" color={theme.primary.get()}>
             {high.toFixed(2)}%
@@ -57,7 +59,7 @@ export default function FieldPercentages({
       <YStack space="$3">
         <XStack justifyContent="space-between">
           <Text fontSize="$6" color={theme.foreground.get()}>
-            Medium
+            {t('medium')}
           </Text>
           <Text fontSize="$6" color={theme.primary.get()}>
             {medium.toFixed(2)}%
@@ -69,7 +71,7 @@ export default function FieldPercentages({
       <YStack space="$3">
         <XStack justifyContent="space-between">
           <Text fontSize="$6" color={theme.foreground.get()}>
-            Low
+            {t('low')}
           </Text>
           <Text fontSize="$6" color={theme.primary.get()}>
             {low.toFixed(2)}%
@@ -81,7 +83,7 @@ export default function FieldPercentages({
       <YStack space="$3">
         <XStack justifyContent="space-between">
           <Text fontSize="$6" color={theme.foreground.get()}>
-            Very Low
+            {t('very_low')}
           </Text>
           <Text fontSize="$6" color={theme.primary.get()}>
             {veryLow.toFixed(2)}%

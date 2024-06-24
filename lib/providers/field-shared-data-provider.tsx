@@ -1,6 +1,6 @@
 import { useQuery } from '@tanstack/react-query';
 import React, { createContext, useState } from 'react';
-import { Region } from 'react-native-maps';
+import { Camera, Region } from 'react-native-maps';
 import { YStack } from 'tamagui';
 
 import db from '../db';
@@ -15,16 +15,14 @@ export interface ContextType {
   map?: FieldsMapInfo;
   scoutPoints?: FieldsScoutPoints[];
   region?: Region;
+  camera?: Camera;
   setMapRegion: (region: Region) => void;
+  setMapCamera: (camera: Camera) => void;
 }
 
 export const FieldSharedDataContext = createContext<ContextType>({
-  details: undefined,
-  field: undefined,
-  map: undefined,
-  scoutPoints: undefined,
-  region: undefined,
   setMapRegion: () => {},
+  setMapCamera: () => {},
 });
 
 export const useSharedFieldData = () => {
@@ -41,6 +39,7 @@ export const FieldSharedDataProvider: React.FC<{
 }> = ({ children, fid }) => {
   const [region, setRegion] = useState<Region>();
 
+  const [camera, setCamera] = useState<Camera>();
   const fieldQuery = useQuery({
     queryKey: ['field', fid],
     enabled: !!fid,
@@ -89,6 +88,9 @@ export const FieldSharedDataProvider: React.FC<{
     setRegion(region);
   }
 
+  function setMapCamera(camera: Camera) {
+    setCamera(camera);
+  }
   if (
     fieldQuery.isLoading ||
     fieldDetailsQuery.isLoading ||
@@ -128,6 +130,8 @@ export const FieldSharedDataProvider: React.FC<{
         scoutPoints: fieldScoutPointsQuery.data as FieldsScoutPoints[],
         region,
         setMapRegion,
+        camera,
+        setMapCamera,
       }}>
       {children}
     </FieldSharedDataContext.Provider>

@@ -8,6 +8,7 @@ import VoiceRecorderControllerInput, {
 } from './VoiceRecorderController';
 
 import { useAudioPlayer } from '~/lib/hooks/useAudioPLayer';
+import { useTranslation } from 'react-i18next';
 
 interface VoiceRecordProps {
   onRecordingComplete: (uri: string) => void;
@@ -19,6 +20,7 @@ export default function VoiceRecord({ onRecordingComplete, value }: VoiceRecordP
   const [uri, setUri] = useState<string | undefined>(value);
   const [isRecording, setIsRecording] = useState(false);
   const voiceReplyPlayer = useAudioPlayer(uri);
+  const { t } = useTranslation();
   const handleError = (error: Error) => {
     console.error('Recording failed:', error);
   };
@@ -55,7 +57,7 @@ export default function VoiceRecord({ onRecordingComplete, value }: VoiceRecordP
               setIsRecording(true);
             }
           }}>
-          {isRecording ? 'Stop' : 'Record'}
+          {isRecording ? t('stop') : t('record')}
         </Button>
         {uri ? (
           <YStack marginTop="$0.5">
@@ -65,7 +67,7 @@ export default function VoiceRecord({ onRecordingComplete, value }: VoiceRecordP
               }}>
               <YStack paddingVertical="$2">
                 <Text fontSize={16} color="$primary">
-                  {voiceReplyPlayer.isPlaying ? 'Stop' : 'Play'}
+                  {voiceReplyPlayer.isPlaying ? t('stop') : t('play')}
                 </Text>
               </YStack>
             </TouchableOpacity>
