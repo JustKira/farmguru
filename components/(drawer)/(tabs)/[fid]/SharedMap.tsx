@@ -1,5 +1,4 @@
-import React, { useEffect } from 'react';
-import { PermissionsAndroid } from 'react-native';
+import React, { useEffect, useRef } from 'react';
 import MapView, { Details, PROVIDER_GOOGLE, Polygon, Region } from 'react-native-maps';
 import { Field } from '~/lib/db/schemas';
 import { useSharedFieldData } from '~/lib/providers/field-shared-data-provider';
@@ -7,10 +6,25 @@ import { useSharedFieldData } from '~/lib/providers/field-shared-data-provider';
 export function SharedMap({ children }: { children: React.ReactNode }) {
   const shared = useSharedFieldData();
 
+  const mapRef = useRef<MapView>(null);
+
   const field = shared.field as Field;
 
   const onRegionChange = async (region: Region, details: Details) => {
     if (details.isGesture === true) {
+      if (mapRef.current) {
+        const camera = await mapRef.current?.getCamera();
+        shared.setMapCamera({
+          center: {
+            latitude: region.latitude,
+            longitude: region.longitude,
+          },
+          pitch: camera.pitch,
+          heading: camera.heading,
+          altitude: camera.altitude,
+          zoom: camera.zoom,
+        });
+      }
       shared.setMapRegion(region);
     }
   };
@@ -29,11 +43,13 @@ export function SharedMap({ children }: { children: React.ReactNode }) {
 
   return (
     <MapView
+      ref={mapRef}
       initialRegion={initialRegion}
+      camera={shared.camera}
       style={{ width: '100%', height: '100%' }}
       provider={PROVIDER_GOOGLE}
       mapType="satellite"
-      region={shared.region ?? initialRegion}
+      // region={shared.region ?? initialRegion}
       showsUserLocation
       showsMyLocationButton
       followsUserLocation
