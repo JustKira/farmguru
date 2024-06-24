@@ -3,6 +3,7 @@ import * as IP from 'expo-image-picker';
 import React, { useState, useImperativeHandle, forwardRef, useEffect } from 'react';
 import { View, Text, Image } from 'react-native';
 import { Button, Sheet, YStack, useTheme } from 'tamagui';
+import useMobileBackHandler from '~/lib/hooks/useMobileBackHandler';
 
 export type ImagePickerSheetHandle = {
   openImagePickerSheet: () => void;
@@ -21,7 +22,15 @@ const ImagePickerSheet = forwardRef<ImagePickerSheetHandle, ImagePickerSheetProp
     const theme = useTheme();
     const [open, setOpen] = useState(false);
     const [imageUri, setImageUri] = useState<string | null>(value ?? null);
-
+    useMobileBackHandler(
+      () => {
+        if (open) {
+          return true;
+        }
+        return false;
+      },
+      () => setOpen(false)
+    );
     useEffect(() => {
       setImageUri(value ?? null);
     }, [value]);

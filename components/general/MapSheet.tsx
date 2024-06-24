@@ -1,7 +1,7 @@
 import React, { useState, useImperativeHandle, forwardRef } from 'react';
 import MapView, { Marker, Region, PROVIDER_GOOGLE, Polygon } from 'react-native-maps';
 import { Button, Sheet, YStack } from 'tamagui';
-
+import useMobileBackHandler from '~/lib/hooks/useMobileBackHandler';
 import { Field } from '~/lib/db/schemas';
 import { useSharedFieldData } from '~/lib/providers/field-shared-data-provider';
 
@@ -37,6 +37,16 @@ const MapSheet = forwardRef<MapSheetHandle, MapSheetProps>(
     const polygonCoordinates = coordinates.map((coordinate) => {
       return { latitude: coordinate[0], longitude: coordinate[1] };
     });
+
+    useMobileBackHandler(
+      () => {
+        if (open) {
+          return true;
+        }
+        return false;
+      },
+      () => setOpen(false)
+    );
 
     useImperativeHandle(ref, () => ({
       openMapSheet: () => setOpen(true),

@@ -52,7 +52,15 @@ async function synchronizeFieldScoutPoint(points: NewFieldsScoutPoints[], user: 
         const res = await db.insert(fieldsScoutPointsSchema).values(p).returning();
         console.log(`Scout Points Inserted ${res[0].id}`);
       } catch (error) {
-        console.error('Error Inserting Scout Points', error);
+        try 
+        {
+          await db.delete(fieldsScoutPointsSchema).where(eq(fieldsScoutPointsSchema.id, p.id));
+        } 
+        catch (error) 
+        {
+          console.error('Error Inserting Scout Points', error);
+        }
+
       }
     })
   );

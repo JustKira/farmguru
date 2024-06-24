@@ -96,7 +96,7 @@ export default function Home() {
                       name={item.name}
                       initialRegion={initialRegion}
                       polyCoords={polygonCoordinates}
-                      onPress={() => router.push(`/(drawer)/${item.id}`)}
+                      onPress={() => router.navigate(`/(drawer)/(tabs)/${item.id}`)}
                     />
                   );
                 }}

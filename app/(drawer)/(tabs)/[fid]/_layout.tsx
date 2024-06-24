@@ -1,11 +1,18 @@
 import { FontAwesome, FontAwesome5, Ionicons, MaterialCommunityIcons } from '@expo/vector-icons';
-import { Tabs, useGlobalSearchParams } from 'expo-router';
+import { Tabs, useGlobalSearchParams, useNavigation, useRouter } from 'expo-router';
 import { useTheme } from 'tamagui';
+import useMobileBackHandler from '~/lib/hooks/useMobileBackHandler';
 
 import { FieldSharedDataProvider } from '~/lib/providers/field-shared-data-provider';
 
 export default function TabLayout() {
   const { fid } = useGlobalSearchParams();
+  const router = useRouter();
+
+  useMobileBackHandler(
+    () => true,
+    () => router.navigate('(drawer)')
+  );
 
   const theme = useTheme();
   return (

@@ -19,6 +19,7 @@ import { Text } from '~/tamagui.config';
 import { Severity } from '~/types/global.types';
 import { useCategories } from '~/utils/categories';
 import getSeverity from '~/utils/get-severity';
+import useMobileBackHandler from '~/lib/hooks/useMobileBackHandler';
 
 export type ScoutPointDetailsHandle = {
   openScoutPointDetails: (point: FieldsScoutPoints) => void;
@@ -59,6 +60,16 @@ const ScoutPointDetails = forwardRef<ScoutPointDetailsHandle>((props, ref) => {
   const categories = useCategories({
     color: severityColor,
   });
+
+  useMobileBackHandler(
+    () => {
+      if (open) {
+        return true;
+      }
+      return false;
+    },
+    () => setOpen(false)
+  );
 
   const selectedCategory = useMemo(() => {
     return categories.find(

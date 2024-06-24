@@ -17,6 +17,7 @@ import VoiceRecord from '~/components/form/VoiceRecorder';
 import MapSheet, { MapSheetHandle } from '~/components/general/MapSheet';
 import db from '~/lib/db';
 import { FieldsScoutPoints, NewFieldsScoutPoints, fieldsScoutPointsSchema } from '~/lib/db/schemas';
+import useMobileBackHandler from '~/lib/hooks/useMobileBackHandler';
 import { useAuth } from '~/lib/providers/auth-provider';
 import { useNetInfo } from '~/lib/providers/netinfo-provider';
 import { synchronizeScoutPointInsertUpdate } from '~/lib/sync/synchronize-field-scout-points';
@@ -84,6 +85,7 @@ const ScoutInsertForm = forwardRef<ScoutInsertFormHandle, { fid: string }>(({ fi
   const [cooldown, setCooldown] = useState(false);
   const [countdown, setCountdown] = useState(0);
   const [isUpdate, setIsUpdate] = useState(false);
+
   const snapPoints = useMemo(() => [82.5], []);
   const auth = useAuth();
   const mapSheetRef = useRef<MapSheetHandle>(null);
@@ -98,6 +100,16 @@ const ScoutInsertForm = forwardRef<ScoutInsertFormHandle, { fid: string }>(({ fi
   const toast = useToastController();
   const imagePickerSheetRef = useRef<ImagePickerSheetHandle>(null);
   const queryClient = useQueryClient();
+
+  useMobileBackHandler(
+    () => {
+      if (open) {
+        return true;
+      }
+      return false;
+    },
+    () => setOpen(false)
+  );
 
   const handleImageSelected = (uri: string) => {
     console.log('Image selected:', uri);
