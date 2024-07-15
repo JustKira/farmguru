@@ -8,6 +8,11 @@ import { View, useColorScheme } from 'react-native';
 import { GestureHandlerRootView } from 'react-native-gesture-handler';
 import { PortalProvider, TamaguiProvider, Theme, YStack } from 'tamagui';
 
+// import '../locales/en';
+// import '../locales/ar';
+
+import './i18n.ts';
+
 import migrations from '../drizzle/migrations';
 import config, { Text } from '../tamagui.config';
 import { getLocales, getCalendars } from 'expo-localization';

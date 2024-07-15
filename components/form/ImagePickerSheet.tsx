@@ -3,6 +3,7 @@ import * as IP from 'expo-image-picker';
 import React, { useState, useImperativeHandle, forwardRef, useEffect } from 'react';
 import { View, Text, Image } from 'react-native';
 import { Button, Sheet, YStack, useTheme } from 'tamagui';
+
 import useMobileBackHandler from '~/lib/hooks/useMobileBackHandler';
 
 export type ImagePickerSheetHandle = {
@@ -85,11 +86,15 @@ const ImagePickerSheet = forwardRef<ImagePickerSheetHandle, ImagePickerSheetProp
         <Sheet.Frame>
           <YStack fullscreen justifyContent="center">
             <Button
+              backgroundColor="$foregroundMuted"
+              color="$background"
               onPress={openCamera}
               icon={() => <FontAwesome name="camera" size={20} color={theme.foreground.get()} />}>
               Open Camera
             </Button>
             <Button
+              backgroundColor="$foregroundMuted"
+              color="$background"
               onPress={pickImage}
               icon={() => <FontAwesome name="image" size={20} color={theme.foreground.get()} />}
               marginTop="$2">
@@ -105,7 +110,11 @@ const ImagePickerSheet = forwardRef<ImagePickerSheetHandle, ImagePickerSheetProp
               </View>
             )}
             {children}
-            <Button onPress={() => setOpen(false)} marginTop="$2">
+            <Button
+              backgroundColor="$foregroundMuted"
+              color="$background"
+              onPress={() => setOpen(false)}
+              marginTop="$2">
               Close
             </Button>
           </YStack>

@@ -3,6 +3,7 @@
   "data": "البيانات",
   "add": "إضافة",
   "global": {
+    "map_legend": "مفتاح الخريطة",
     "time": {
       "hour": "ساعة",
       "hours": "ساعات"
@@ -153,6 +154,7 @@
   "status": "الحالة",
   "default": "صورة الحقل",
   "weekly_status_report": "ملخص التقرير الأسبوعي",
+  "weekly_change": "التغير الأسبوعي",
   "nutritional_value": "النيتروجين",
   "growth": "النمو",
   "nutrients": "النيتروجين",

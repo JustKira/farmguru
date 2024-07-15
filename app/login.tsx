@@ -1,9 +1,12 @@
 import { zodResolver } from '@hookform/resolvers/zod';
+import { useToastController } from '@tamagui/toast';
+import { Image } from 'expo-image';
 import { useRouter } from 'expo-router';
 import { useEffect, useState } from 'react';
 import { Controller, useForm } from 'react-hook-form';
 import { useTranslation } from 'react-i18next';
-import { Button, Input, YStack } from 'tamagui';
+import { useColorScheme } from 'react-native';
+import { Button, H1, Input, Stack, YStack } from 'tamagui';
 import * as z from 'zod';
 
 import { Container } from '~/components/Container';
@@ -22,8 +25,10 @@ export default function LoginScreen() {
   const { checking, isConnected } = useNetInfo();
   const { user, authenticate } = useAuth();
   const router = useRouter();
-
+  const toast = useToastController();
   const { t } = useTranslation();
+
+  const color = useColorScheme();
 
   const form = useForm({
     resolver: zodResolver(formSchema),
@@ -52,6 +57,11 @@ export default function LoginScreen() {
 
     if (res.authenticated) {
       router.push('(drawer)');
+    } else {
+      toast.show('Error', {
+        message: 'Invalid credentials',
+        duration: 3000,
+      });
     }
     setLoading(false);
   });
@@ -61,6 +71,22 @@ export default function LoginScreen() {
       <NavStackStyled options={{ headerShown: false }} />
       <Container>
         <YStack flex={1} justifyContent="center" space="$4">
+          <Stack width={'100%'} h={'$12'}>
+            <Image
+              source={
+                color === 'dark'
+                  ? require('~/assets/farmguru_white.svg')
+                  : require('~/assets/farmguru.svg')
+              }
+              style={{
+                width: '100%',
+                height: '100%',
+              }}
+              alt="test"
+              contentFit="cover"
+            />
+          </Stack>
+
           <YStack space="$2">
             <Text size="$4">{t('login.email')}</Text>
             <Controller
@@ -86,7 +112,7 @@ export default function LoginScreen() {
               name="password"
             />
           </YStack>
-          <Button onPress={onSubmit}>
+          <Button backgroundColor="$foregroundMuted" color="$background" onPress={onSubmit}>
             {loading ? `${t('messages.loading')}` : `${t('login.signin')}`}
           </Button>
         </YStack>

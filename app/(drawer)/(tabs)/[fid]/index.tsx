@@ -1,8 +1,9 @@
+import { useRef } from 'react';
 import { useTranslation } from 'react-i18next';
 import { Overlay } from 'react-native-maps';
-import { YStack, ZStack } from 'tamagui';
+import { H2, H3, XStack, YStack, ZStack } from 'tamagui';
 
-import { SharedMap } from '~/components/(drawer)/(tabs)/[fid]/SharedMap';
+import SharedMap from '~/components/(drawer)/(tabs)/[fid]/SharedMap';
 import ConfiguredSheet from '~/components/(drawer)/(tabs)/[fid]/Sheet';
 import TrendBlock from '~/components/(drawer)/(tabs)/[fid]/info/TrendBlock';
 import NavStackStyled from '~/components/NavStackStyled';
@@ -16,6 +17,8 @@ export default function Index() {
   const field = shared.field as Field;
   const map = shared.map as FieldsMapInfo;
   const details = shared.details as FieldDetail;
+
+  //   const mapRef = useRef<SharedMapRef>(null);
 
   const { t } = useTranslation();
 
@@ -33,15 +36,29 @@ export default function Index() {
 
       <ConfiguredSheet screen="INFO">
         <YStack gap="$4">
-          <TrendBlock label={t('nutrients')} value={Number(details?.nutrientsTrend ?? 0)} />
+          <H3>{t('weekly_change')}</H3>
+          <XStack justifyContent="space-between" gap="$2">
+            <TrendBlock label={t('nutrients')} value={Number(details?.nutrientsTrend ?? 0)} />
+            <TrendBlock
+              label={t('stress')}
+              value={Number(details?.stressTrend ?? 0)}
+              isNegativeNature
+            />
+          </XStack>
 
-          <TrendBlock label={t('growth')} value={Number(details?.growthTrend ?? 0)} />
+          <XStack justifyContent="space-between" gap="$2">
+            <TrendBlock label={t('growth')} value={Number(details?.growthTrend ?? 0)} />
 
-          <TrendBlock
-            label={t('stress')}
-            value={Number(details?.stressTrend ?? 0)}
-            isNegativeNature
-          />
+            <XStack flex={1} opacity={0}>
+              <TrendBlock
+                label={t('stress')}
+                value={Number(details?.stressTrend ?? 0)}
+                isNegativeNature
+              />
+            </XStack>
+
+            {/* <TrendBlock label={t('growth')} value={Number(details?.growthTrend ?? 0)} /> */}
+          </XStack>
         </YStack>
       </ConfiguredSheet>
     </ZStack>

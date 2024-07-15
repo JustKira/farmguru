@@ -1,17 +1,13 @@
-import AsyncStorage from '@react-native-async-storage/async-storage';
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
+import axios from 'axios';
+import * as SecureStore from 'expo-secure-store';
 import React, { createContext, useEffect, useState } from 'react';
 
-import db from '../db';
-import {
-  fieldsDetailSchema,
-  fieldsMapInfoSchema,
-  fieldsSchema,
-  fieldsScoutPointsSchema,
-} from '../db/schemas';
+import { BACKEND_API } from '..';
 import LoginEndpoint from '../endpoints/login';
 
 import { UserData } from '~/types/global.types';
+import api from '../endpoints/api';
 
 type AuthStatus = 'LOADING' | 'AUTHENTICATED' | 'UNAUTHENTICATED' | 'LOGOUT';
 
@@ -19,14 +15,9 @@ export interface AuthContextType {
   user: UserData | null;
   loading: boolean;
   status: AuthStatus;
-  authenticate: (
-    email: string,
-    password: string
-  ) => Promise<{
-    authenticated: boolean;
-  }>;
-
+  authenticate: (email: string, password: string) => Promise<{ authenticated: boolean }>;
   signOut: () => Promise<void>;
+  getAccessToken: () => Promise<string | null>;
 }
 
 const AuthContext = createContext<AuthContextType | undefined>(undefined);
@@ -39,28 +30,28 @@ export const useAuth = () => {
   return context;
 };
 
-export const AuthProvider: React.FC<{
-  children: JSX.Element;
-}> = ({ children }) => {
+export const AuthProvider: React.FC<{ children: JSX.Element }> = ({ children }) => {
   const [status, setStatus] = useState<AuthStatus>('LOADING');
-
   const queryClient = useQueryClient();
   const [user, setUser] = useState<UserData | null>(null);
 
   const getUser = useQuery({
     queryKey: ['user-auth'],
     queryFn: async () => {
-      const res = await AsyncStorage.getItem('user');
-
+      const res = await SecureStore.getItem('user');
       if (res) {
         setStatus('AUTHENTICATED');
       } else {
         setStatus('UNAUTHENTICATED');
       }
-      return res;
+      return res ?? null;
     },
     retry: false,
   });
+
+  // const refersh = async () => {
+  //   await SecureStore.setItem('accessToken', data.accessToken);
+  // }
 
   const authenticateMutation = useMutation({
     mutationKey: ['mut-user-auth'],
@@ -68,7 +59,10 @@ export const AuthProvider: React.FC<{
       LoginEndpoint(email, password),
     onSuccess: async (data) => {
       setStatus('LOADING');
-      await AsyncStorage.setItem('user', JSON.stringify(data));
+
+      await SecureStore.setItem('user', JSON.stringify(data));
+      await SecureStore.setItem('accessToken', data.accessToken);
+      await SecureStore.setItem('refreshToken', data.refreshToken);
       setUser(data);
       console.log('User', data);
       getUser.refetch();
@@ -80,7 +74,11 @@ export const AuthProvider: React.FC<{
 
   const logoutMutation = useMutation({
     mutationKey: ['mut-user-logout'],
-    mutationFn: () => AsyncStorage.removeItem('user'),
+    mutationFn: async () => {
+      await SecureStore.deleteItemAsync('user');
+      await SecureStore.deleteItemAsync('accessToken');
+      await SecureStore.deleteItemAsync('refreshToken');
+    },
     onSuccess: async () => {
       setUser(null);
       setStatus('LOGOUT');
@@ -98,14 +96,30 @@ export const AuthProvider: React.FC<{
 
   const authenticate = async (email: string, password: string) => {
     const res = await authenticateMutation.mutateAsync({ email, password });
-    return res.loginId ? { authenticated: true } : { authenticated: false };
+    if (res.loginId) {
+      api.defaults.headers.common['Authorization'] = `Bearer ${res.accessToken}`;
+      return { authenticated: true };
+    }
+    return { authenticated: false };
   };
 
   const signOut = async () => {
     await logoutMutation.mutateAsync();
+    delete api.defaults.headers.common['Authorization'];
   };
 
-  const value = { user, authenticate, signOut, status, loading: getUser.isLoading };
+  const getAccessToken = async () => {
+    return SecureStore.getItem('accessToken');
+  };
+
+  const value = {
+    user,
+    authenticate,
+    signOut,
+    status,
+    loading: getUser.isLoading,
+    getAccessToken,
+  };
 
   return <AuthContext.Provider value={value}>{children}</AuthContext.Provider>;
 };

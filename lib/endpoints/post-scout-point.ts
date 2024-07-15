@@ -1,4 +1,4 @@
-import { BACKEND_API } from '..';
+import api from './api';
 
 interface ScoutPoint {
   MarkerId?: string;
@@ -15,19 +15,9 @@ interface ScoutPoint {
 }
 
 export default async function createUpdateScoutPointEndpoint(data: ScoutPoint) {
-  return fetch(`${BACKEND_API}/fields/markers/add`, {
-    method: 'POST',
-    headers: {
-      'Content-Type': 'application/json',
-    },
-    body: JSON.stringify({
-      ...data,
-      Status: 'NEW',
-    }),
-  }).then(async (res) => {
-    if (res.ok) {
-      const r = await res.json();
-      return r.data as Marker;
-    }
+  const response = await api.post('/fields/markers/add', {
+    ...data,
+    Status: 'NEW',
   });
+  return response.data.data as Marker;
 }

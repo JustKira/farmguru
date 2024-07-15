@@ -313,10 +313,12 @@ const ScoutInsertForm = forwardRef<ScoutInsertFormHandle, { fid: string }>(({ fi
               </YStack>
               <YStack gap="$2">
                 <Text size="$2">
-                  {t('add')}
-                  {t('image')}{' '}
+                  {t('add')} {t('image')}{' '}
                 </Text>
-                <Button onPress={() => imagePickerSheetRef.current?.openImagePickerSheet()}>
+                <Button
+                  backgroundColor="$foregroundMuted"
+                  color="$background"
+                  onPress={() => imagePickerSheetRef.current?.openImagePickerSheet()}>
                   {form.watch('photoUri')
                     ? t('selected', { name: t('image') })
                     : t('select', { name: t('image') })}
@@ -371,6 +373,8 @@ const ScoutInsertForm = forwardRef<ScoutInsertFormHandle, { fid: string }>(({ fi
               <YStack>
                 <Text size="$2">{t('location')}</Text>
                 <Button
+                  backgroundColor="$foregroundMuted"
+                  color="$background"
                   onPress={() => {
                     mapSheetRef.current?.openMapSheet();
                   }}>
@@ -395,7 +399,7 @@ const ScoutInsertForm = forwardRef<ScoutInsertFormHandle, { fid: string }>(({ fi
               />
               <Button
                 backgroundColor="$primary"
-                color="black"
+                color="$background"
                 disabled={cooldown}
                 onPress={async () => {
                   await onSubmit();
@@ -414,7 +418,12 @@ const ScoutInsertForm = forwardRef<ScoutInsertFormHandle, { fid: string }>(({ fi
                 }}>
                 {cooldown ? `${t('save')} (${countdown})` : t('save')}
               </Button>
-              <Button onPress={() => setOpen(false)}>{t('cancel')}</Button>
+              <Button
+                backgroundColor="$foregroundMuted"
+                color="$background"
+                onPress={() => setOpen(false)}>
+                {t('cancel')}
+              </Button>
             </YStack>
           </ScrollView>
         </Sheet.Frame>

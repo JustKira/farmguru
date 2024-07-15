@@ -3,6 +3,7 @@ import { format } from 'date-fns';
 import { date } from 'drizzle-orm/mysql-core';
 import { Image } from 'expo-image';
 import React, { forwardRef, useImperativeHandle, useState, useMemo, useRef } from 'react';
+import { useTranslation } from 'react-i18next';
 import { TouchableOpacity } from 'react-native';
 import { Marker } from 'react-native-maps';
 import { Button, Paragraph, ScrollView, Sheet, XStack, YStack, useTheme } from 'tamagui';
@@ -14,15 +15,14 @@ import MapSheet, { MapSheetHandle } from '~/components/general/MapSheet';
 import PreviewImageSheet, { PreviewImageSheetHandle } from '~/components/general/PreviewImageSheet';
 import { Field, FieldsScoutPoints } from '~/lib/db/schemas';
 import { useAudioPlayer } from '~/lib/hooks/useAudioPLayer';
+import useMobileBackHandler from '~/lib/hooks/useMobileBackHandler';
 import { useSharedFieldData } from '~/lib/providers/field-shared-data-provider';
+import { useLanguage } from '~/lib/providers/language-provider';
 import { Text } from '~/tamagui.config';
 import { Severity } from '~/types/global.types';
 import { useCategories } from '~/utils/categories';
 import getSeverity from '~/utils/get-severity';
-import useMobileBackHandler from '~/lib/hooks/useMobileBackHandler';
-import { useTranslation } from 'react-i18next';
 import { localizedDateFormate } from '~/utils/localizedDateFormate';
-import { useLanguage } from '~/lib/providers/language-provider';
 
 export type ScoutPointDetailsHandle = {
   openScoutPointDetails: (point: FieldsScoutPoints) => void;
@@ -183,6 +183,8 @@ const ScoutPointDetails = forwardRef<ScoutPointDetailsHandle>((props, ref) => {
 
                   {selectedPoint?.voiceNoteFile ? (
                     <Button
+                      backgroundColor="$foregroundMuted"
+                      color="$background"
                       onPress={() => {
                         voiceNotePlayer.togglePlay();
                       }}
@@ -204,7 +206,12 @@ const ScoutPointDetails = forwardRef<ScoutPointDetailsHandle>((props, ref) => {
                     {t('image')}
                   </Text>
                   {selectedPoint?.photosFiles?.[0] ? (
-                    <Button onPress={handleOpenPreview}>{t('open_image')}</Button>
+                    <Button
+                      backgroundColor="$foregroundMuted"
+                      color="$background"
+                      onPress={handleOpenPreview}>
+                      {t('open_image')}
+                    </Button>
                   ) : (
                     <Text size="$4">{t('no_available', { name: t('image') })}</Text>
                   )}
@@ -237,6 +244,8 @@ const ScoutPointDetails = forwardRef<ScoutPointDetailsHandle>((props, ref) => {
                       <Text size="$2">Lng - {selectedPoint?.location[1].toFixed(4)}</Text>
                     </XStack>
                     <Button
+                      backgroundColor="$foregroundMuted"
+                      color="$background"
                       onPress={() => {
                         handleOpenMap();
                       }}>
@@ -257,6 +266,8 @@ const ScoutPointDetails = forwardRef<ScoutPointDetailsHandle>((props, ref) => {
 
                     {selectedPoint?.voiceReplyFile ? (
                       <Button
+                        backgroundColor="$foregroundMuted"
+                        color="$background"
                         onPress={() => {
                           voiceReplyPlayer.togglePlay();
                         }}

@@ -5,7 +5,7 @@ import { BackHandler } from 'react-native';
 import { Marker, Overlay } from 'react-native-maps';
 import { Button, YStack, ZStack } from 'tamagui';
 
-import { SharedMap } from '~/components/(drawer)/(tabs)/[fid]/SharedMap';
+import SharedMap from '~/components/(drawer)/(tabs)/[fid]/SharedMap';
 import ConfiguredSheet from '~/components/(drawer)/(tabs)/[fid]/Sheet';
 import ScoutInsertForm, {
   ScoutInsertFormHandle,
@@ -78,6 +78,8 @@ export default function Scout() {
       <ConfiguredSheet screen="SCOUT">
         <YStack gap="$4">
           <Button
+            backgroundColor="$foregroundMuted"
+            color="$background"
             onPress={() => {
               scoutInsertFormRef.current?.openScoutPointForm();
             }}>

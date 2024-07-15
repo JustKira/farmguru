@@ -118,6 +118,8 @@ const MapSheet = forwardRef<MapSheetHandle, MapSheetProps>(
               {t('save')}
             </Button>
             <Button
+              backgroundColor="$foregroundMuted"
+              color="$background"
               onPress={() => {
                 setOpen(false);
               }}>

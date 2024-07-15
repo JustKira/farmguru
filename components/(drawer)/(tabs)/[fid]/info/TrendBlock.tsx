@@ -1,8 +1,8 @@
 import { Feather } from '@expo/vector-icons';
 import React from 'react';
-import { Stack, YStack, useTheme } from 'tamagui';
-import { useLanguage } from '~/lib/providers/language-provider';
+import { H3, H5, Stack, YStack, useTheme } from 'tamagui';
 
+import { useLanguage } from '~/lib/providers/language-provider';
 import { Text } from '~/tamagui.config';
 
 interface TrendBlockProps {
@@ -16,20 +16,28 @@ export default function TrendBlock({ isNegativeNature, label, value }: TrendBloc
   const isTrendingPositive = isNegativeNature ? value <= 0 : value >= 0;
   const { currentLanguage } = useLanguage();
   return (
-    <YStack alignItems={'flex-start'}>
-      <YStack alignItems={'flex-start'}>
+    <YStack
+      flex={1}
+      backgroundColor="$muted"
+      padding="$2"
+      aspectRatio={1}
+      justifyContent="center"
+      elevation={0.5}
+      borderRadius="$2"
+      alignItems="center">
+      <YStack alignItems="center" alignContent="center" justifyContent="center">
+        <H3>{label}</H3>
         <Feather
           name={isTrendingPositive ? 'trending-up' : 'trending-down'}
-          size={32}
+          size={90}
           color={isTrendingPositive ? theme.green9.get() : theme.red9.get()}
         />
-        <Text size="$9">{label}</Text>
       </YStack>
-      <Stack>
+      {/* <Stack>
         <Text size="$9" color={isTrendingPositive ? theme.green9.get() : theme.red9.get()}>
           {value.toFixed(2)}%
         </Text>
-      </Stack>
+      </Stack> */}
     </YStack>
   );
 }

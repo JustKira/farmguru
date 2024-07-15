@@ -1,4 +1,5 @@
 {
+  "map_legend": "Map Legend",
   "ask": "Ask",
   "data": "Data",
   "add": "Add",
@@ -153,6 +154,7 @@
   "status": "Status",
   "default": "Default",
   "weekly_status_report": "Weekly Status Report",
+  "weekly_change": "Weekly Change",
   "nutritional_value": "Nitrogen",
   "growth": "Growth",
   "nutrients": "Nitrogen",
@@ -211,7 +213,7 @@
     },
     "crop_info": {
       "title": "Crop Info",
-      "type": "Type",
+      "type": "Crop Type",
       "variety": "Variety",
       "age": "Crop Age",
       "plant_date": "Plant Date"

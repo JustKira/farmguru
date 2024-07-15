@@ -13,12 +13,17 @@ import {
   fieldsSchema,
   fieldsScoutPointsSchema,
 } from '../db/schemas';
+import getFarmsEndpoint from '../endpoints/get-farms';
 import getFieldDetailsEndpoint from '../endpoints/get-field-details';
 import getFieldEndpoint from '../endpoints/get-fields';
+import { farmParser } from '../parsers/farm-parser';
 import { fieldDetailsInfoParser } from '../parsers/field-detail-parser';
 import { fieldDetailsImageParser } from '../parsers/field-map-detail';
 import { fieldParser } from '../parsers/field-parser';
 import { fieldScoutPointParser } from '../parsers/field-scout-point-parser';
+import useSyncScoutPoints from '../sync/hooks/synchronize-fields-scout-point';
+import useSyncIrrigationPoints from '../sync/hooks/synchronize-irrigation';
+import { synchronizeFarms } from '../sync/synchronize-farm';
 import { synchronizeFieldsDetails } from '../sync/synchronize-field-details';
 import { synchronizeFieldMapDetails } from '../sync/synchronize-field-map-details';
 import {
@@ -37,11 +42,6 @@ import {
   SYNCED,
   ERROR,
 } from '~/utils/sync-states';
-import useSyncScoutPoints from '../sync/hooks/synchronize-fields-scout-point';
-import getFarmsEndpoint from '../endpoints/get-farms';
-import { farmParser } from '../parsers/farm-parser';
-import { synchronizeFarms } from '../sync/synchronize-farm';
-import useSyncIrrigationPoints from '../sync/hooks/synchronize-irrigation';
 
 type FieldsDetailLoading =
   | 'FETCHING_DETAILS'

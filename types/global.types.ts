@@ -4,6 +4,8 @@ export interface UserData {
   accountType: string;
   email: string;
   name: string;
+  accessToken: string;
+  refreshToken: string;
 }
 
 export type Severity = 'late' | 'moderate' | 'early';

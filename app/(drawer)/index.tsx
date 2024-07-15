@@ -63,7 +63,7 @@ export default function Home() {
           <Button
             aspectRatio={1}
             padding={0}
-            icon={<MaterialIcons name="refresh" size={20} color="white" />}
+            icon={<MaterialIcons name="refresh" size={20} color="$background" />}
             onPress={() => {
               forceSync();
             }}

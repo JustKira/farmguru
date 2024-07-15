@@ -1,16 +1,6 @@
-import { BACKEND_API } from '..';
+import api from './api';
 
 export default async function getStorageEndpoint(key: string, actionMaker: string) {
-  return fetch(`${BACKEND_API}/storage/get`, {
-    method: 'POST',
-    headers: {
-      'Content-Type': 'application/json',
-    },
-    body: JSON.stringify({ Key: key, ActionMaker: actionMaker }),
-  }).then(async (res) => {
-    if (res.ok) {
-      const r = await res.json();
-      return r.data as string;
-    }
-  });
+  const response = await api.post('/storage/get', { Key: key, ActionMaker: actionMaker });
+  return response.data.data as string;
 }

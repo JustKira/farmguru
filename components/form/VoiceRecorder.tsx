@@ -1,14 +1,14 @@
 import { FontAwesome } from '@expo/vector-icons';
 import { useEffect, useRef, useState } from 'react';
+import { useTranslation } from 'react-i18next';
 import { TouchableOpacity } from 'react-native-gesture-handler';
-import { Button, Stack, Text, YStack } from 'tamagui';
+import { Button, Stack, Text, YStack, useTheme } from 'tamagui';
 
 import VoiceRecorderControllerInput, {
   VoiceRecorderControllerInputHandle,
 } from './VoiceRecorderController';
 
 import { useAudioPlayer } from '~/lib/hooks/useAudioPLayer';
-import { useTranslation } from 'react-i18next';
 
 interface VoiceRecordProps {
   onRecordingComplete: (uri: string) => void;
@@ -25,6 +25,8 @@ export default function VoiceRecord({ onRecordingComplete, value }: VoiceRecordP
     console.error('Recording failed:', error);
   };
 
+  const theme = useTheme();
+
   useEffect(() => {
     setUri(value);
   }, [value]);
@@ -39,11 +41,14 @@ export default function VoiceRecord({ onRecordingComplete, value }: VoiceRecordP
       onRecordingError={handleError}>
       <Stack>
         <Button
+          backgroundColor="$foregroundMuted"
+          color="$background"
           icon={
             <FontAwesome
               style={{
                 marginRight: 10,
               }}
+              color={theme.background.get()}
               name={isRecording ? 'microphone-slash' : 'microphone'}
               size={20}
             />

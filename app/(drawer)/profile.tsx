@@ -22,21 +22,26 @@ export default function Profile() {
       <Container>
         <YStack flex={1} justifyContent="space-between">
           <Text size="$5">{user?.email}</Text>
+          <YStack gap="$2">
+            <Button
+              backgroundColor="$foregroundMuted"
+              color="$background"
+              onPress={() => {
+                changeLanguage(currentLanguage === 'ar' ? 'en' : 'ar');
+              }}>
+              Change Language {currentLanguage === 'ar' ? 'English' : 'Arabic'}
+            </Button>
 
-          <Button
-            onPress={() => {
-              changeLanguage(currentLanguage === 'ar' ? 'en' : 'ar');
-            }}>
-            Change Language {currentLanguage === 'ar' ? 'English' : 'Arabic'}
-          </Button>
-
-          <Button
-            onPress={async () => {
-              await signOut();
-              router.replace('/');
-            }}>
-            {t('signout')}
-          </Button>
+            <Button
+              backgroundColor="$foreground"
+              color="$background"
+              onPress={async () => {
+                await signOut();
+                router.replace('/');
+              }}>
+              {t('signout')}
+            </Button>
+          </YStack>
         </YStack>
       </Container>
     </>

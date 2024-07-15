@@ -211,7 +211,7 @@ const AddIrrigationForm = forwardRef<IrrigationFormHandle, { fid: string }>(({ f
             </YStack>
             <Button
               backgroundColor="$primary"
-              color="black"
+              color="$background"
               disabled={cooldown}
               onPress={async () => {
                 await onSubmit();
@@ -230,7 +230,12 @@ const AddIrrigationForm = forwardRef<IrrigationFormHandle, { fid: string }>(({ f
               }}>
               {cooldown ? `${t('save')} (${countdown})` : t('save')}
             </Button>
-            <Button onPress={() => setOpen(false)}>{t('cancel')}</Button>
+            <Button
+              backgroundColor="$foregroundMuted"
+              color="$background"
+              onPress={() => setOpen(false)}>
+              {t('cancel')}
+            </Button>
           </YStack>
         </ScrollView>
       </Sheet.Frame>

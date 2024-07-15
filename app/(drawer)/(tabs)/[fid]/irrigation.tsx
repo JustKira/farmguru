@@ -3,8 +3,9 @@ import { useRef } from 'react';
 import { useTranslation } from 'react-i18next';
 import { Overlay } from 'react-native-maps';
 import { Button, XStack, YStack, ZStack, useTheme } from 'tamagui';
+import { MapLegend } from '~/components/(drawer)/(tabs)/[fid]/MapLegend';
 
-import { SharedMap } from '~/components/(drawer)/(tabs)/[fid]/SharedMap';
+import SharedMap from '~/components/(drawer)/(tabs)/[fid]/SharedMap';
 import ConfiguredSheet from '~/components/(drawer)/(tabs)/[fid]/Sheet';
 import AddIrrigationForm, {
   IrrigationFormHandle,
@@ -40,8 +41,22 @@ export default function Irrigation() {
           )}
         </SharedMap>
 
-        <ConfiguredSheet screen="IRRIGATION">
-          <YStack>
+        <ConfiguredSheet
+          screen="IRRIGATION"
+          header={() => (
+            <YStack backgroundColor="$background" m="$2" padding="$2" borderRadius={'$2'}>
+              {/* <Text fontSize="$3">{t('map_legend')}</Text> */}
+              <MapLegend
+                items={[
+                  { color: '#f9faff', name: t('very_low') },
+                  { color: '#aacfe9', name: t('low') },
+                  { color: '#3688c0', name: t('medium') },
+                  { color: '#09326a', name: t('high') },
+                ]}
+              />
+            </YStack>
+          )}>
+          <YStack gap="$2">
             <YStack flex={1} gap="$6">
               <Text size="$8">{t('water_field_status')}</Text>
               <XStack flex={1} justifyContent="space-between" alignItems="flex-start">
@@ -61,10 +76,12 @@ export default function Irrigation() {
               <XStack justifyContent="space-between" alignItems="flex-start">
                 <Text size="$8">{t('nav.irrigation')}</Text>
                 <Button
+                  backgroundColor="$foregroundMuted"
+                  color="$background"
                   onPress={() => {
                     irrigationFormRef.current?.openIrrigationForm();
                   }}>
-                  {`${t('actions.add')}${t('nav.irrigation')}`}
+                  {`${t('actions.add')} ${t('nav.irrigation')}`}
                 </Button>
               </XStack>
               <XStack flex={1} justifyContent="space-between" alignItems="flex-start">

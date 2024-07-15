@@ -30,16 +30,7 @@ const MapCardSelector: React.FC<MapCardSelectorProps> = ({
   const { syncStateDetailed } = useSynchronizer();
   const { t } = useTranslation();
   return (
-    <YStack
-      flex={1}
-      h="$16"
-      flexDirection="column-reverse"
-      my="$2"
-      gap="$2"
-      p="$2"
-      borderColor="$muted"
-      borderRadius="$2"
-      borderWidth="$0.5">
+    <YStack flex={1} h="$16" flexDirection="column-reverse" my="$2" gap="$2" p="$2">
       <Button
         backgroundColor={
           syncStateDetailed[id] === 'NO_ANALYTICS' ||

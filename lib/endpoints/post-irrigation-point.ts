@@ -1,4 +1,4 @@
-import { BACKEND_API } from '..';
+import api from './api';
 
 interface IrrigationPoint {
   FieldId?: string;
@@ -8,14 +8,9 @@ interface IrrigationPoint {
 }
 
 export default async function createUpdateIrrigationPointEndpoint(data: IrrigationPoint) {
-  return fetch(`${BACKEND_API}/fields/irrigations/add`, {
-    method: 'POST',
-    headers: {
-      'Content-Type': 'application/json',
-    },
-    body: JSON.stringify({
-      ...data,
-      Status: 'NEW',
-    }),
+  const response = await api.post('/fields/irrigations/add', {
+    ...data,
+    Status: 'NEW',
   });
+  return response.data.data;
 }
