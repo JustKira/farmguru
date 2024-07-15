@@ -21,6 +21,7 @@ import { FieldsScoutPoints, NewFieldsScoutPoints, fieldsScoutPointsSchema } from
 import useMobileBackHandler from '~/lib/hooks/useMobileBackHandler';
 import { useAuth } from '~/lib/providers/auth-provider';
 import { useLanguage } from '~/lib/providers/language-provider';
+import { useLoading } from '~/lib/providers/loading-provider';
 import { useNetInfo } from '~/lib/providers/netinfo-provider';
 import { synchronizeScoutPointInsertUpdate } from '~/lib/sync/synchronize-field-scout-points';
 import { Text } from '~/tamagui.config';
@@ -88,7 +89,7 @@ const ScoutInsertForm = forwardRef<ScoutInsertFormHandle, { fid: string }>(({ fi
   const [cooldown, setCooldown] = useState(false);
   const [countdown, setCountdown] = useState(0);
   const [isUpdate, setIsUpdate] = useState(false);
-
+  const { startLoading, success, error } = useLoading();
   const snapPoints = useMemo(() => [82.5], []);
   const auth = useAuth();
   const mapSheetRef = useRef<MapSheetHandle>(null);
@@ -210,6 +211,7 @@ const ScoutInsertForm = forwardRef<ScoutInsertFormHandle, { fid: string }>(({ fi
       lastUpdate: new Date(data.createdOn).toISOString(),
       voiceNoteFile: data.voiceNoteUri,
     };
+    startLoading();
 
     try {
       if (isUpdate && pointId) {
@@ -236,25 +238,37 @@ const ScoutInsertForm = forwardRef<ScoutInsertFormHandle, { fid: string }>(({ fi
           !isUpdate
         );
       } else {
-        toast.show('You are Offline', {
-          message: 'Scout point saved locally and will be synced when online.',
-          duration: 3000,
+        success('Scout point saved locally and will be synced when online.', () => {
+          form.reset();
+          setOpen(false);
         });
+        // toast.show('You are Offline', {
+        //   message: 'Scout point saved locally and will be synced when online.',
+        //   duration: 3000,
+        // });
       }
 
       await queryClient.invalidateQueries({
         queryKey: ['field', 'scout', fid],
       });
-      setOpen(false);
-      form.reset();
-    } catch (error) {
-      console.error('Error saving scout point:', error);
-      toast.show('Error', {
-        message: 'An error occurred while saving the scout point. Please try again.',
-        duration: 3000,
+
+      success('Scout point saved', () => {
+        form.reset();
+        setOpen(false);
       });
+    } catch (e) {
+      error('Error saving scout point', () => {});
     }
   });
+
+  const getFirstError = (errors: any) => {
+    const errorKeys = Object.keys(errors);
+    if (errorKeys.length > 0) {
+      const firstKey = errorKeys[0];
+      return { field: firstKey, message: errors[firstKey].message };
+    }
+    return null;
+  };
 
   return (
     <>
@@ -397,27 +411,43 @@ const ScoutInsertForm = forwardRef<ScoutInsertFormHandle, { fid: string }>(({ fi
                 onImageSelected={handleImageSelected}
                 // value={form.watch('photoUri')}
               />
-              <Button
-                backgroundColor="$primary"
-                color="$background"
-                disabled={cooldown}
-                onPress={async () => {
-                  await onSubmit();
-                  const errors = Object.entries(form.formState.errors);
-                  if (errors.length !== 0) {
-                    const [key, error] = errors[0];
-                    if (error?.message) {
-                      toast.show(`Error`, {
-                        message: `${key}: ${error.message}`,
-                        duration: 3000,
-                      });
+              <YStack>
+                <Button
+                  backgroundColor="$primary"
+                  color="$background"
+                  disabled={cooldown}
+                  onPress={async () => {
+                    await onSubmit();
+                    const errors = Object.entries(form.formState.errors);
+                    if (errors.length !== 0) {
+                      const [key, error] = errors[0];
+                      if (error?.message) {
+                        toast.show(`${key}: ${error.message}`, {
+                          message: `${key}: ${error.message}`,
+                          duration: 3000,
+                        });
+                      }
                     }
-                  }
 
-                  startCooldown();
-                }}>
-                {cooldown ? `${t('save')} (${countdown})` : t('save')}
-              </Button>
+                    startCooldown();
+                  }}>
+                  {cooldown ? `${t('save')} (${countdown})` : t('save')}
+                </Button>
+                <YStack>
+                  {(() => {
+                    const firstError = getFirstError(form.formState.errors);
+                    if (firstError) {
+                      return (
+                        <Text color="red" size="$4">
+                          {firstError.field}: {firstError.message}
+                        </Text>
+                      );
+                    }
+                    return null;
+                  })()}
+                </YStack>
+              </YStack>
+
               <Button
                 backgroundColor="$foregroundMuted"
                 color="$background"

@@ -12,6 +12,7 @@ import * as z from 'zod';
 import { Container } from '~/components/Container';
 import NavStackStyled from '~/components/NavStackStyled';
 import { useAuth } from '~/lib/providers/auth-provider';
+import { useLoading } from '~/lib/providers/loading-provider';
 import { useNetInfo } from '~/lib/providers/netinfo-provider';
 import { Text } from '~/tamagui.config';
 
@@ -25,8 +26,9 @@ export default function LoginScreen() {
   const { checking, isConnected } = useNetInfo();
   const { user, authenticate } = useAuth();
   const router = useRouter();
-  const toast = useToastController();
+
   const { t } = useTranslation();
+  const { startLoading, success, error } = useLoading();
 
   const color = useColorScheme();
 
@@ -53,15 +55,15 @@ export default function LoginScreen() {
   }
   const onSubmit = form.handleSubmit(async (data) => {
     setLoading(true);
+    startLoading();
     const res = await authenticate(data.email, data.password);
 
     if (res.authenticated) {
-      router.push('(drawer)');
-    } else {
-      toast.show('Error', {
-        message: 'Invalid credentials',
-        duration: 3000,
+      success('Login Successful', () => {
+        router.push('/(drawer)');
       });
+    } else {
+      error('Wrong email or password. Please try again.', () => {});
     }
     setLoading(false);
   });
@@ -71,7 +73,7 @@ export default function LoginScreen() {
       <NavStackStyled options={{ headerShown: false }} />
       <Container>
         <YStack flex={1} justifyContent="center" space="$4">
-          <Stack width={'100%'} h={'$12'}>
+          <Stack width="100%" h="$12">
             <Image
               source={
                 color === 'dark'

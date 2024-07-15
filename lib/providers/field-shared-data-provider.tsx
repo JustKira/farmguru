@@ -91,6 +91,7 @@ export const FieldSharedDataProvider: React.FC<{
   function setMapCamera(camera: Camera) {
     setCamera(camera);
   }
+
   if (
     fieldQuery.isLoading ||
     fieldDetailsQuery.isLoading ||

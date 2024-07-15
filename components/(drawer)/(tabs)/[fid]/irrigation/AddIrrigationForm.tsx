@@ -12,6 +12,7 @@ import db from '~/lib/db';
 import { FieldIrrigation, NewFieldIrrigation, fieldIrrigationSchema } from '~/lib/db/schemas';
 import { useAuth } from '~/lib/providers/auth-provider';
 import { useLanguage } from '~/lib/providers/language-provider';
+import { useLoading } from '~/lib/providers/loading-provider';
 import { useNetInfo } from '~/lib/providers/netinfo-provider';
 import { synchronizeIrrigationInsert } from '~/lib/sync/synchronize-irrigation';
 import { Text } from '~/tamagui.config';
@@ -30,6 +31,7 @@ export type IrrigationFormHandle = {
 const AddIrrigationForm = forwardRef<IrrigationFormHandle, { fid: string }>(({ fid }, ref) => {
   const [open, setOpen] = useState(false);
   const [cooldown, setCooldown] = useState(false);
+  const { startLoading, success, error, cancelLoading } = useLoading();
   const [countdown, setCountdown] = useState(0);
   const auth = useAuth();
   const snapPoints = useMemo(() => [82.5], []);
@@ -108,6 +110,7 @@ const AddIrrigationForm = forwardRef<IrrigationFormHandle, { fid: string }>(({ f
     console.log('Irrigation Data:', dataToInsert);
 
     try {
+      startLoading();
       const res = await db.insert(fieldIrrigationSchema).values(dataToInsert).returning();
       const result = res[0] as FieldIrrigation;
 
@@ -119,21 +122,24 @@ const AddIrrigationForm = forwardRef<IrrigationFormHandle, { fid: string }>(({ f
           auth.user
         );
       } else {
-        toast.show('You are Offline', {
-          message: 'Irrigation saved locally and will be synced when online.',
-          duration: 3000,
-        });
+        success('Irrigation saved locally and will be synced when online.');
+        // toast.show('You are Offline', {
+        //   message: 'Irrigation saved locally and will be synced when online.',
+        //   duration: 3000,
+        // });
       }
 
       setOpen(false);
       form.reset();
-    } catch (error) {
-      console.error('Error saving irrigation:', error);
-      toast.show('Error', {
-        message: 'An error occurred while saving the irrigation. Please try again.',
-        duration: 3000,
-      });
+    } catch (e) {
+      console.error('Error saving irrigation:', e);
+      error('An error occurred while saving the irrigation. Please try again.');
+      // toast.show('Error', {
+      //   message: 'An error occurred while saving the irrigation. Please try again.',
+      //   duration: 3000,
+      // });
     }
+    cancelLoading();
   });
 
   return (

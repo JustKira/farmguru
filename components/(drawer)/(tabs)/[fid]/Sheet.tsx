@@ -1,9 +1,7 @@
 import { Entypo, FontAwesome6, MaterialIcons } from '@expo/vector-icons';
-import { format } from 'date-fns';
 import React, { useMemo, useState } from 'react';
 import { useTranslation } from 'react-i18next';
-import { ScrollView, Sheet, Stack, XStack, YStack, useTheme } from 'tamagui';
-
+import { ScrollView, Sheet, XStack, YStack, useTheme } from 'tamagui';
 import { Field, FieldDetail } from '~/lib/db/schemas';
 import { useSharedFieldData } from '~/lib/providers/field-shared-data-provider';
 import { useLanguage } from '~/lib/providers/language-provider';
@@ -15,18 +13,23 @@ interface ConfiguredSheetProps {
   header?: () => React.ReactNode;
   footer?: React.ReactNode;
   screen: 'CROP' | 'IRRIGATION' | 'SCOUT' | 'INFO';
+  aboveHandle?: React.ReactNode;
 }
 
-export default function ConfiguredSheet({ children, header, screen }: ConfiguredSheetProps) {
+export default function ConfiguredSheet({
+  children,
+  header,
+  screen,
+  aboveHandle,
+}: ConfiguredSheetProps) {
   const shared = useSharedFieldData();
   const theme = useTheme();
   const details = shared.details as FieldDetail;
   const field = shared.field as Field;
   const snapPoints = useMemo(() => [85, 50, 17.5], []);
-
   const { currentLanguage } = useLanguage();
-
   const [sheetPosition, setSheetPosition] = useState(snapPoints.length - 1);
+  const { t } = useTranslation();
 
   const lastUpdate = useMemo(() => {
     switch (screen) {
@@ -41,8 +44,6 @@ export default function ConfiguredSheet({ children, header, screen }: Configured
     }
   }, [screen, details]);
 
-  const { t } = useTranslation();
-
   return (
     <Sheet
       open
@@ -54,15 +55,15 @@ export default function ConfiguredSheet({ children, header, screen }: Configured
       position={sheetPosition}
       onPositionChange={setSheetPosition}
       zIndex={100}>
+      {aboveHandle}
       <Sheet.Handle />
       <Sheet.Frame>
-        {header ? (
+        {header && (
           <YStack paddingHorizontal="$4" gap="$2" backgroundColor="$background">
             {header()}
           </YStack>
-        ) : null}
-
-        <ScrollView mt="$8">
+        )}
+        <ScrollView>
           <YStack flex={1} paddingHorizontal="$4" gap="$2" mb="$4" backgroundColor="$background">
             <XStack borderRadius="$2" padding="$2">
               <Text size="$5">{field.name}</Text>

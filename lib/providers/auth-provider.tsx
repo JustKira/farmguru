@@ -38,7 +38,7 @@ export const AuthProvider: React.FC<{ children: JSX.Element }> = ({ children }) 
   const getUser = useQuery({
     queryKey: ['user-auth'],
     queryFn: async () => {
-      const res = await SecureStore.getItem('user');
+      const res = SecureStore.getItem('user');
       if (res) {
         setStatus('AUTHENTICATED');
       } else {
@@ -60,9 +60,9 @@ export const AuthProvider: React.FC<{ children: JSX.Element }> = ({ children }) 
     onSuccess: async (data) => {
       setStatus('LOADING');
 
-      await SecureStore.setItem('user', JSON.stringify(data));
-      await SecureStore.setItem('accessToken', data.accessToken);
-      await SecureStore.setItem('refreshToken', data.refreshToken);
+      SecureStore.setItem('user', JSON.stringify(data));
+      SecureStore.setItem('accessToken', data.accessToken);
+      SecureStore.setItem('refreshToken', data.refreshToken);
       setUser(data);
       console.log('User', data);
       getUser.refetch();
@@ -75,9 +75,9 @@ export const AuthProvider: React.FC<{ children: JSX.Element }> = ({ children }) 
   const logoutMutation = useMutation({
     mutationKey: ['mut-user-logout'],
     mutationFn: async () => {
-      await SecureStore.deleteItemAsync('user');
-      await SecureStore.deleteItemAsync('accessToken');
-      await SecureStore.deleteItemAsync('refreshToken');
+      SecureStore.deleteItemAsync('user');
+      SecureStore.deleteItemAsync('accessToken');
+      SecureStore.deleteItemAsync('refreshToken');
     },
     onSuccess: async () => {
       setUser(null);
@@ -95,10 +95,14 @@ export const AuthProvider: React.FC<{ children: JSX.Element }> = ({ children }) 
   }, [getUser.data]);
 
   const authenticate = async (email: string, password: string) => {
-    const res = await authenticateMutation.mutateAsync({ email, password });
-    if (res.loginId) {
-      api.defaults.headers.common['Authorization'] = `Bearer ${res.accessToken}`;
-      return { authenticated: true };
+    try {
+      const res = await authenticateMutation.mutateAsync({ email, password });
+      if (res.loginId) {
+        api.defaults.headers.common['Authorization'] = `Bearer ${res.accessToken}`;
+        return { authenticated: true };
+      }
+    } catch (error) {
+      return { authenticated: false };
     }
     return { authenticated: false };
   };

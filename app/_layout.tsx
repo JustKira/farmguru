@@ -2,6 +2,7 @@ import { ToastProvider } from '@tamagui/toast';
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
 import { useMigrations } from 'drizzle-orm/expo-sqlite/migrator';
 import { useFonts } from 'expo-font';
+import { getLocales, getCalendars } from 'expo-localization';
 import { Stack, SplashScreen } from 'expo-router';
 import React, { useEffect } from 'react';
 import { View, useColorScheme } from 'react-native';
@@ -15,14 +16,14 @@ import './i18n.ts';
 
 import migrations from '../drizzle/migrations';
 import config, { Text } from '../tamagui.config';
-import { getLocales, getCalendars } from 'expo-localization';
 
-import db from '~/lib/db';
-import { AuthProvider } from '~/lib/providers/auth-provider';
-import { NetInfoProvider } from '~/lib/providers/netinfo-provider';
 import { CustomToast } from '~/components/Toast';
 import { SafeToastViewport } from '~/components/ToastSafeView';
+import db from '~/lib/db';
+import { AuthProvider } from '~/lib/providers/auth-provider';
 import { LanguageProvider } from '~/lib/providers/language-provider';
+import { LoadingProvider } from '~/lib/providers/loading-provider';
+import { NetInfoProvider } from '~/lib/providers/netinfo-provider';
 
 SplashScreen.preventAutoHideAsync();
 
@@ -67,21 +68,23 @@ const Wrapper = ({ children }: { children: React.ReactNode }) => {
       <ThemeProvider>
         <PortalProvider shouldAddRootHost>
           <LanguageProvider>
-            <MigratorWrapper>
-              <QueryClientProvider client={queryClient}>
-                <NetInfoProvider>
-                  <AuthProvider>
-                    <Theme name={color}>
-                      <ToastProvider>
-                        {children}
-                        <SafeToastViewport />
-                        <CustomToast />
-                      </ToastProvider>
-                    </Theme>
-                  </AuthProvider>
-                </NetInfoProvider>
-              </QueryClientProvider>
-            </MigratorWrapper>
+            <LoadingProvider>
+              <MigratorWrapper>
+                <QueryClientProvider client={queryClient}>
+                  <NetInfoProvider>
+                    <AuthProvider>
+                      <Theme name={color}>
+                        <ToastProvider native>
+                          {children}
+                          <SafeToastViewport />
+                          <CustomToast />
+                        </ToastProvider>
+                      </Theme>
+                    </AuthProvider>
+                  </NetInfoProvider>
+                </QueryClientProvider>
+              </MigratorWrapper>
+            </LoadingProvider>
           </LanguageProvider>
         </PortalProvider>
       </ThemeProvider>

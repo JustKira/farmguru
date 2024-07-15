@@ -12,8 +12,14 @@ interface MapLegendProps {
 
 export function MapLegend({ items }: MapLegendProps) {
   return (
-    <YStack borderRadius="$2">
-      <XStack flexWrap="wrap" gap="$3" mt="$2">
+    <YStack px="$2">
+      <XStack
+        flexWrap="wrap"
+        borderRadius="$4"
+        backgroundColor={'$background'}
+        gap="$3"
+        my="$2"
+        padding="$2">
         {items.map((item, index) => (
           <XStack key={index} alignItems="center" space="$1">
             <View width={24} height={12} backgroundColor={item.color} borderRadius="$1" />
