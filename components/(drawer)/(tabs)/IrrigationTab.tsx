@@ -75,6 +75,7 @@ const IrrigationTabContent: React.FC<TabContentProps> = ({ shared, t }) => {
   // Render the irrigation information
   return (
     <>
+      <AddIrrigationForm fid={field.id as string} ref={irrigationFormRef} />
       <YStack gap="$2">
         <YStack flex={1} gap="$6">
           <Text size="$8">{t('water_field_status')}</Text>
@@ -98,6 +99,7 @@ const IrrigationTabContent: React.FC<TabContentProps> = ({ shared, t }) => {
               backgroundColor="$foregroundMuted"
               color="$background"
               onPress={() => {
+                console.log(irrigationFormRef.current);
                 irrigationFormRef.current?.openIrrigationForm();
               }}>
               {`${t('actions.add')} ${t('nav.irrigation')}`}
@@ -117,7 +119,6 @@ const IrrigationTabContent: React.FC<TabContentProps> = ({ shared, t }) => {
           </XStack>
         </YStack>
       </YStack>
-      <AddIrrigationForm fid={field.id as string} ref={irrigationFormRef} />
     </>
   );
 };

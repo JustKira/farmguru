@@ -1,8 +1,8 @@
 import axios from 'axios';
+import { router } from 'expo-router';
 import * as SecureStore from 'expo-secure-store';
 
 import { BACKEND_API } from '..';
-import { router } from 'expo-router';
 
 const api = axios.create({
   baseURL: BACKEND_API,
@@ -29,7 +29,7 @@ api.interceptors.response.use(
       originalRequest._retry = true;
       const refreshToken = await SecureStore.getItem('refreshToken');
       try {
-        const response = await axios.post(`${BACKEND_API}/refresh`, { refreshToken });
+        const response = await axios.post(`${BACKEND_API}/account/refresh`, { refreshToken });
         const { accessToken } = response.data;
         await SecureStore.setItem('accessToken', accessToken);
         api.defaults.headers.common['Authorization'] = `Bearer ${accessToken}`;

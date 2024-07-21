@@ -121,6 +121,11 @@ const AddIrrigationForm = forwardRef<IrrigationFormHandle, { fid: string }>(({ f
           //@ts-ignore
           auth.user
         );
+        success('Irrigation saved.');
+        // toast.show('You are Offline', {
+        //   message: 'Irrigation saved locally and will be synced when online.',
+        //   duration: 3000,
+        // });
       } else {
         success('Irrigation saved locally and will be synced when online.');
         // toast.show('You are Offline', {
@@ -139,7 +144,6 @@ const AddIrrigationForm = forwardRef<IrrigationFormHandle, { fid: string }>(({ f
       //   duration: 3000,
       // });
     }
-    cancelLoading();
   });
 
   return (

@@ -73,7 +73,7 @@ export default function LoginScreen() {
       <NavStackStyled options={{ headerShown: false }} />
       <Container>
         <YStack flex={1} justifyContent="center" space="$4">
-          <Stack width="100%" h="$12">
+          <Stack width="90%" h="$12">
             <Image
               source={
                 color === 'dark'

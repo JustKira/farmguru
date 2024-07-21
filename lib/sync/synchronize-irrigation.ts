@@ -24,9 +24,10 @@ async function synchronizeIrrigationInsert(data: FieldIrrigation, fieldId: strin
 
     const res = await createUpdateIrrigationPointEndpoint(irrigationData);
 
-    if (!res.ok) {
-      throw new Error('Failed to sync irrigation point');
-    }
+    // if (!res) {
+    //   console.error(res);
+    //   throw new Error(res.error);
+    // }
 
     console.log('Irrigation Point Synced');
 

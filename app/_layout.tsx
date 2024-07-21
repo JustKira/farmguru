@@ -68,23 +68,23 @@ const Wrapper = ({ children }: { children: React.ReactNode }) => {
       <ThemeProvider>
         <PortalProvider shouldAddRootHost>
           <LanguageProvider>
-            <LoadingProvider>
-              <MigratorWrapper>
-                <QueryClientProvider client={queryClient}>
-                  <NetInfoProvider>
-                    <AuthProvider>
-                      <Theme name={color}>
+            <MigratorWrapper>
+              <QueryClientProvider client={queryClient}>
+                <NetInfoProvider>
+                  <AuthProvider>
+                    <Theme name={color}>
+                      <LoadingProvider>
                         <ToastProvider native>
                           {children}
                           <SafeToastViewport />
                           <CustomToast />
                         </ToastProvider>
-                      </Theme>
-                    </AuthProvider>
-                  </NetInfoProvider>
-                </QueryClientProvider>
-              </MigratorWrapper>
-            </LoadingProvider>
+                      </LoadingProvider>
+                    </Theme>
+                  </AuthProvider>
+                </NetInfoProvider>
+              </QueryClientProvider>
+            </MigratorWrapper>
           </LanguageProvider>
         </PortalProvider>
       </ThemeProvider>
@@ -104,11 +104,7 @@ const MigratorWrapper = ({ children }: { children: React.ReactNode }) => {
   }
 
   if (!success) {
-    return (
-      <YStack>
-        <Text>Migration is in progress...</Text>
-      </YStack>
-    );
+    return <YStack></YStack>;
   }
 
   return <>{children}</>;
