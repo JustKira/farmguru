@@ -17,6 +17,7 @@
       }
     },
     "production": {
+      "credentialsSource": "local",
       "env": {
         "EXPO_PUBLIC_API_URL": "https://api.vais.ai"
       }

@@ -109,7 +109,13 @@ export default function LoginScreen() {
             <Controller
               control={form.control}
               render={({ field: { onChange, onBlur, value }, fieldState: { error } }) => (
-                <Input onBlur={onBlur} onChangeText={onChange} value={value} secureTextEntry />
+                <Input
+                  testID="what-ever"
+                  onBlur={onBlur}
+                  onChangeText={onChange}
+                  value={value}
+                  secureTextEntry
+                />
               )}
               name="password"
             />

@@ -1,8 +1,8 @@
 {
   "expo": {
-    "name": "Farmguru",
+    "name": "Farmdguru",
     "slug": "farmguru",
-    "version": "0.0.2b",
+    "version": "0.0.7",
     "scheme": "farmguru",
     "web": {
       "bundler": "metro",
@@ -24,7 +24,16 @@
           "locationAlwaysAndWhenInUsePermission": "Allow $(PRODUCT_NAME) to use your location."
         }
       ],
-      ["expo-build-properties"],
+      [
+        "expo-build-properties",
+        {
+          "android": {
+            "compileSdkVersion": 34,
+            "targetSdkVersion": 34,
+            "buildToolsVersion": "34.0.0"
+          }
+        }
+      ],
       "expo-localization"
     ],
     "experiments": {
@@ -42,9 +51,11 @@
     "assetBundlePatterns": ["**/*"],
     "ios": {
       "supportsTablet": true,
-      "bundleIdentifier": "com.vais.farmguru"
+      "bundleIdentifier": "com.vais.farmgate"
     },
     "android": {
+      "versionCode": 25,
+
       "adaptiveIcon": {
         "foregroundImage": "./assets/adaptive-icon.png",
         "backgroundColor": "#ffffff"
@@ -55,7 +66,7 @@
         }
       },
       "permissions": ["android.permission.ACCESS_FINE_LOCATION"],
-      "package": "com.vais.farmguru"
+      "package": "com.vais.farmgate"
     },
     "extra": {
       "router": {
