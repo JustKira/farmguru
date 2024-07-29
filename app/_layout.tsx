@@ -24,6 +24,14 @@ import { AuthProvider } from '~/lib/providers/auth-provider';
 import { LanguageProvider } from '~/lib/providers/language-provider';
 import { LoadingProvider } from '~/lib/providers/loading-provider';
 import { NetInfoProvider } from '~/lib/providers/netinfo-provider';
+import * as Sentry from '@sentry/react-native';
+
+Sentry.init({
+  dsn: 'https://0aa2490c387189fcb0fcbe94c96a89c2@o4507394079326208.ingest.de.sentry.io/4507684913021008',
+
+  // uncomment the line below to enable Spotlight (https://spotlightjs.com)
+  // enableSpotlight: __DEV__,
+});
 
 SplashScreen.preventAutoHideAsync();
 
@@ -32,7 +40,7 @@ SplashScreen.preventAutoHideAsync();
 //   initialRouteName: '(drawer)',
 // };
 
-export default function RootLayout() {
+function RootLayout() {
   return (
     <Wrapper>
       <Stack />
@@ -113,3 +121,5 @@ const MigratorWrapper = ({ children }: { children: React.ReactNode }) => {
 const ThemeProvider = ({ children }: { children: React.ReactNode }) => {
   return <TamaguiProvider config={config}>{children}</TamaguiProvider>;
 };
+
+export default Sentry.wrap(RootLayout);

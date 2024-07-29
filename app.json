@@ -34,7 +34,15 @@
           }
         }
       ],
-      "expo-localization"
+      "expo-localization",
+      [
+        "@sentry/react-native/expo",
+        {
+          "url": "https://sentry.io/",
+          "project": "farmguru",
+          "organization": "pixelscortex"
+        }
+      ]
     ],
     "experiments": {
       "typedRoutes": true,
@@ -48,14 +56,15 @@
       "resizeMode": "contain",
       "backgroundColor": "#ffffff"
     },
-    "assetBundlePatterns": ["**/*"],
+    "assetBundlePatterns": [
+      "**/*"
+    ],
     "ios": {
       "supportsTablet": true,
       "bundleIdentifier": "com.vais.farmgate"
     },
     "android": {
       "versionCode": 25,
-
       "adaptiveIcon": {
         "foregroundImage": "./assets/adaptive-icon.png",
         "backgroundColor": "#ffffff"
@@ -65,7 +74,9 @@
           "apiKey": "AIzaSyC3ZEf3MEM6o4vCDVOt3AGTFPP0DrrJnto"
         }
       },
-      "permissions": ["android.permission.ACCESS_FINE_LOCATION"],
+      "permissions": [
+        "android.permission.ACCESS_FINE_LOCATION"
+      ],
       "package": "com.vais.farmgate"
     },
     "extra": {
