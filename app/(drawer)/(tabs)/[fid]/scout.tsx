@@ -78,6 +78,7 @@ export default function Scout() {
       <ConfiguredSheet screen="SCOUT">
         <YStack gap="$4">
           <Button
+            testID="add-scout-point"
             backgroundColor="$foregroundMuted"
             color="$background"
             onPress={() => {

@@ -22,6 +22,7 @@ export const DateTimeSelector: React.FC<DateTimeSelectorProps> = ({
   return (
     <>
       <Button
+        testID={mode === 'date' ? 'date-input' : 'duration-input'}
         backgroundColor="$foregroundMuted"
         color="$background"
         onPress={() => setShow(true)}

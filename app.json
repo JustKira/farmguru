@@ -64,7 +64,7 @@
       "bundleIdentifier": "com.vais.farmgate"
     },
     "android": {
-      "versionCode": 25,
+      "versionCode": 26,
       "adaptiveIcon": {
         "foregroundImage": "./assets/adaptive-icon.png",
         "backgroundColor": "#ffffff"
@@ -75,7 +75,8 @@
         }
       },
       "permissions": [
-        "android.permission.ACCESS_FINE_LOCATION"
+        "android.permission.ACCESS_FINE_LOCATION",
+        "android.permission.ACCESS_COARSE_LOCATION"
       ],
       "package": "com.vais.farmgate"
     },
@@ -86,6 +87,7 @@
       "eas": {
         "projectId": "5804e828-a85b-4773-87c5-284c7c99f1b6"
       }
-    }
+    },
+    "owner": "vais"
   }
 }

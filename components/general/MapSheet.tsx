@@ -118,6 +118,7 @@ const MapSheet = forwardRef<MapSheetHandle, MapSheetProps>(
               {t('save')}
             </Button>
             <Button
+              testID="cancel-button"
               backgroundColor="$foregroundMuted"
               color="$background"
               onPress={() => {

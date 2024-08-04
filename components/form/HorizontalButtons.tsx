@@ -1,6 +1,7 @@
 import React, { useEffect, useState } from 'react';
 import { TouchableOpacity } from 'react-native';
 import { YStack, XStack, useWindowDimensions, useTheme } from 'tamagui';
+import testIdConverter from '~/lib/test-id-converter';
 
 import { Text } from '~/tamagui.config';
 
@@ -43,7 +44,10 @@ export const HorizontalButtons: React.FC<HorizontalButtonsProps> = ({
   return (
     <XStack justifyContent="space-between">
       {items.map((item, index) => (
-        <TouchableOpacity key={index} onPress={() => handlePress(item.value)}>
+        <TouchableOpacity
+          testID={testIdConverter(item.text)}
+          key={index}
+          onPress={() => handlePress(item.value)}>
           <YStack
             width={buttonSize}
             height={square ? buttonSize : undefined}

@@ -241,6 +241,7 @@ const AddIrrigationForm = forwardRef<IrrigationFormHandle, { fid: string }>(({ f
               {cooldown ? `${t('save')} (${countdown})` : t('save')}
             </Button>
             <Button
+              testID="cancel-button"
               backgroundColor="$foregroundMuted"
               color="$background"
               onPress={() => setOpen(false)}>

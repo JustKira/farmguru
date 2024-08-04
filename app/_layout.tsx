@@ -1,12 +1,13 @@
+import * as Sentry from '@sentry/react-native';
 import { ToastProvider } from '@tamagui/toast';
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
 import { useMigrations } from 'drizzle-orm/expo-sqlite/migrator';
 import { useFonts } from 'expo-font';
-import { getLocales, getCalendars } from 'expo-localization';
 import { Stack, SplashScreen } from 'expo-router';
 import React, { useEffect } from 'react';
-import { View, useColorScheme } from 'react-native';
+import { Linking, Platform, Alert, useColorScheme } from 'react-native'; // Import Alert from 'react-native'
 import { GestureHandlerRootView } from 'react-native-gesture-handler';
+import VersionCheck from 'react-native-version-check';
 import { PortalProvider, TamaguiProvider, Theme, YStack } from 'tamagui';
 
 // import '../locales/en';
@@ -24,7 +25,6 @@ import { AuthProvider } from '~/lib/providers/auth-provider';
 import { LanguageProvider } from '~/lib/providers/language-provider';
 import { LoadingProvider } from '~/lib/providers/loading-provider';
 import { NetInfoProvider } from '~/lib/providers/netinfo-provider';
-import * as Sentry from '@sentry/react-native';
 
 Sentry.init({
   dsn: 'https://0aa2490c387189fcb0fcbe94c96a89c2@o4507394079326208.ingest.de.sentry.io/4507684913021008',
@@ -64,10 +64,47 @@ const Wrapper = ({ children }: { children: React.ReactNode }) => {
     }
   }, [loaded]);
 
-  // useEffect(() => {
-  //   console.log(theme);
-  //   NavigationBar.setBackgroundColorAsync(color === 'dark' ? '#000000' : '#ffffff');
-  // }, [color]);
+  // Android-specific version check
+  useEffect(() => {
+    const checkAppVersion = async () => {
+      try {
+        const latestVersion = await VersionCheck.getLatestVersion({
+          provider: 'playStore',
+          packageName: 'com.vais.farmgate',
+          ignoreErrors: true,
+        });
+
+        const currentVersion = VersionCheck.getCurrentVersion();
+
+        if (latestVersion > currentVersion) {
+          Alert.alert(
+            'Update Required',
+            'A new version of the app is available. Please update to continue using the app.',
+            [
+              {
+                text: 'Update Now',
+                onPress: async () => {
+                  Linking.openURL(
+                    await VersionCheck.getPlayStoreUrl({ packageName: 'com.vais.farmgate' })
+                  );
+                },
+              },
+            ],
+            { cancelable: false }
+          );
+        } else {
+          // App is up-to-date; proceed with the app
+        }
+      } catch (error) {
+        // Handle error while checking app version
+        console.error('Error checking app version:', error);
+      }
+    };
+
+    if (Platform.OS === 'android') {
+      checkAppVersion();
+    }
+  }, []);
 
   if (!loaded) return null;
 
@@ -112,7 +149,7 @@ const MigratorWrapper = ({ children }: { children: React.ReactNode }) => {
   }
 
   if (!success) {
-    return <YStack></YStack>;
+    return <></>;
   }
 
   return <>{children}</>;

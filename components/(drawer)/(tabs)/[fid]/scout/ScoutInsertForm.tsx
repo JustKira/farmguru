@@ -310,6 +310,7 @@ const ScoutInsertForm = forwardRef<ScoutInsertFormHandle, { fid: string }>(({ fi
                 <Text size="$2">{t('notes')}</Text>
                 <TextArea
                   size="$4"
+                  testID="notes-section"
                   borderWidth={1}
                   textAlignVertical="top"
                   value={form.watch('notes')}
@@ -415,6 +416,7 @@ const ScoutInsertForm = forwardRef<ScoutInsertFormHandle, { fid: string }>(({ fi
                 <Button
                   backgroundColor="$primary"
                   color="$background"
+                  testID="save-button"
                   disabled={cooldown}
                   onPress={async () => {
                     await onSubmit();
@@ -449,6 +451,7 @@ const ScoutInsertForm = forwardRef<ScoutInsertFormHandle, { fid: string }>(({ fi
               </YStack>
 
               <Button
+                testID="cancel-button"
                 backgroundColor="$foregroundMuted"
                 color="$background"
                 onPress={() => setOpen(false)}>
