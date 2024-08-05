@@ -73,7 +73,7 @@ export default function LoginScreen() {
       <NavStackStyled options={{ headerShown: false }} />
       <Container>
         <YStack flex={1} justifyContent="center" space="$4">
-          <YStack justifyContent="center" alignItems="center" width="100%" h="$12">
+          <YStack justifyContent="flex-end" alignItems="flex-start" width="100%" h="$10">
             <Image
               source={
                 color === 'dark'
@@ -81,8 +81,8 @@ export default function LoginScreen() {
                   : require('~/assets/farmguru.svg')
               }
               style={{
-                width: '95%',
-                height: '95%',
+                width: '75%',
+                height: '75%',
               }}
               alt="test"
               contentFit="cover"

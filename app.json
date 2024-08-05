@@ -1,8 +1,8 @@
 {
   "expo": {
-    "name": "Farmdguru",
+    "name": "FarmGuru",
     "slug": "farmguru",
-    "version": "0.0.7",
+    "version": "0.0.8",
     "scheme": "farmguru",
     "web": {
       "bundler": "metro",
@@ -56,15 +56,13 @@
       "resizeMode": "contain",
       "backgroundColor": "#ffffff"
     },
-    "assetBundlePatterns": [
-      "**/*"
-    ],
+    "assetBundlePatterns": ["**/*"],
     "ios": {
       "supportsTablet": true,
       "bundleIdentifier": "com.vais.farmgate"
     },
     "android": {
-      "versionCode": 26,
+      "versionCode": 27,
       "adaptiveIcon": {
         "foregroundImage": "./assets/adaptive-icon.png",
         "backgroundColor": "#ffffff"
