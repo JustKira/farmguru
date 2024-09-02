@@ -97,7 +97,6 @@ const Wrapper = ({ children }: { children: React.ReactNode }) => {
         }
       } catch (error) {
         // Handle error while checking app version
-        console.error('Error checking app version:', error);
       }
     };
 
